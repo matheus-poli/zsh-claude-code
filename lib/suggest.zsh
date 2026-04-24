@@ -6,7 +6,9 @@ claude-suggest() {
   setopt localoptions nomonitor nonotify
   [[ -z "$BUFFER" ]] && return
   local prompt="$BUFFER"
-  local original="$BUFFER"
+  # POSTDISPLAY shows the spinner after BUFFER without touching it, so the
+  # user's typed request stays visible while claude thinks.
+  local original_postdisplay="$POSTDISPLAY"
 
   local out_file err_file
   out_file=$(mktemp) err_file=$(mktemp)
@@ -17,8 +19,7 @@ claude-suggest() {
   frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
   local i=0
   while kill -0 $pid 2>/dev/null; do
-    BUFFER="🤖 ${frames[$((i % ${#frames} + 1))]} thinking…"
-    CURSOR=${#BUFFER}
+    POSTDISPLAY="  🤖 ${frames[$((i % ${#frames} + 1))]} claude thinking how to do it…"
     zle -R
     sleep 0.08
     (( i++ ))
@@ -26,14 +27,14 @@ claude-suggest() {
   wait $pid 2>/dev/null
   local rc=$?
 
+  POSTDISPLAY="$original_postdisplay"
+
   local result stderr_msg
   result=$(<"$out_file")
   stderr_msg=$(<"$err_file")
   rm -f "$out_file" "$err_file"
 
   if (( rc != 0 )) || [[ -z "$result" ]]; then
-    BUFFER="$original"
-    CURSOR=${#BUFFER}
     zle -I
     _zsh_claude_code_report_error "$stderr_msg" "$rc" "suggest"
     zle reset-prompt
