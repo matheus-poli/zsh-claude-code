@@ -7,7 +7,7 @@ All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overvi
 - **<kbd>Ctrl</kbd>+<kbd>X</kbd>** - describe a command in plain English, press to rewrite the line into shell.
 - **<kbd>Alt</kbd>+<kbd>E</kbd>** - type or paste a command, press to print an explanation above it.
 
-<img width="916" height="520" alt="WindowsTerminal_CeQeVY48Uk" src="https://github.com/user-attachments/assets/5f63970d-b601-4e22-8cef-797ddccd791d" />
+<img width="800" height="419" alt="WindowsTerminal_A85xYb6BzN" src="https://github.com/user-attachments/assets/fe3bd238-2171-46e3-b4d5-114dce65345c" />
 
 ## Features
 
