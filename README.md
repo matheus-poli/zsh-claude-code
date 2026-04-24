@@ -21,6 +21,16 @@ All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overvi
 
 ## Installation
 
+### zinit (recommended)
+
+Requires [zinit](https://github.com/zdharma-continuum/zinit). Add to your `~/.zshrc` after zinit is initialized:
+
+```bash
+zinit light matheus-poli/zsh-claude-code
+```
+
+Restart your shell or `source ~/.zshrc`.
+
 ### oh-my-zsh
 
 If you use [oh-my-zsh](https://ohmyz.sh/), clone into the custom plugins dir:
@@ -37,12 +47,6 @@ Add `zsh-claude-code` to your `plugins=(...)` in `~/.zshrc`, then restart your s
 ```bash
 git clone https://github.com/matheus-poli/zsh-claude-code ~/.zsh-claude-code
 echo 'source ~/.zsh-claude-code/zsh-claude-code.plugin.zsh' >> ~/.zshrc
-```
-
-### zinit
-
-```bash
-zinit light matheus-poli/zsh-claude-code
 ```
 
 ## Usage
