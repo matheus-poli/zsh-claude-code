@@ -2,7 +2,7 @@
 
 Claude-powered helpers for your zsh prompt. Ask questions, explain commands, and turn natural language into shell commands - without leaving the terminal.
 
-All four features wrap the [`claude` CLI](https://claude.ai/claude-code) (Claude Code) in `--print` mode, so if you're already logged in with `claude login` there's nothing else to set up.
+All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overview) (Claude Code) in `--print` mode, so if you're already logged in with `claude login` there's nothing else to set up.
 
 ## Features
 
@@ -16,12 +16,14 @@ All four features wrap the [`claude` CLI](https://claude.ai/claude-code) (Claude
 ## Requirements
 
 - `zsh` 5.0+
-- [`claude` CLI](https://claude.ai/claude-code) installed and authenticated (either `claude login` or `ANTHROPIC_API_KEY` in the environment)
+- [`claude` CLI](https://code.claude.com/docs/en/overview) installed and authenticated (either `claude login` or `ANTHROPIC_API_KEY` in the environment)
 - No other runtime dependencies
 
 ## Installation
 
 ### oh-my-zsh
+
+If you use [oh-my-zsh](https://ohmyz.sh/), clone into the custom plugins dir:
 
 ```sh
 git clone https://github.com/matheus-poli/zsh-claude-code \
