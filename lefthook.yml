@@ -1,7 +1,9 @@
 commit-msg:
   commands:
     commitlint:
-      run: npx --no -- commitlint --edit {1}
+      # `mise exec` ensures node/npx resolve via mise-pinned versions
+      # even in non-interactive shells (CI, GUI git clients).
+      run: mise exec -- npx --no -- commitlint --edit {1}
 
 pre-commit:
   parallel: true
@@ -14,8 +16,6 @@ pre-commit:
           zsh -n "$f"
         done
     bats:
-      # Run the full suite on every commit. It takes ~1s and catches
-      # regressions in plugin code, test files, or refactors that don't
-      # change a .zsh file directly (eg. a lefthook or mise tweak that
-      # breaks the test runner itself).
-      run: bats test/plugin.bats
+      # Run the full suite on every commit. ~1s, catches regressions in
+      # plugin code, tests, or tooling changes that affect the runner.
+      run: mise exec -- bats test/plugin.bats
