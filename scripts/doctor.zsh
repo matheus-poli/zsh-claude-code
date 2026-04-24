@@ -79,6 +79,12 @@ if [[ -f .git/hooks/pre-commit ]] && grep -q lefthook .git/hooks/pre-commit 2>/d
 else
   _warn ".git/hooks/pre-commit" "not wired — run \`mise run setup\`"
 fi
+
+if [[ -f .git/hooks/pre-push ]] && grep -q lefthook .git/hooks/pre-push 2>/dev/null; then
+  _ok ".git/hooks/pre-push" "lefthook wired"
+else
+  _warn ".git/hooks/pre-push" "not wired — run \`mise run setup\`"
+fi
 print
 
 _head "Runtime (claude CLI)"

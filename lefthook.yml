@@ -18,4 +18,13 @@ pre-commit:
     bats:
       # Run the full suite on every commit. ~1s, catches regressions in
       # plugin code, tests, or tooling changes that affect the runner.
-      run: mise exec -- bats test/plugin.bats
+      # Glob the directory so new *.bats files are picked up automatically.
+      run: mise exec -- bats test/
+
+pre-push:
+  commands:
+    check:
+      # Full pre-PR suite: lint, bats, and the live smoke test. Smoke
+      # skips (exit 0) if claude is missing or not authenticated, so it
+      # never blocks a contributor who hasn't set up claude locally.
+      run: mise run check
