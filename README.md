@@ -10,8 +10,8 @@ All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overvi
 |---|---|---|---|
 | **Ask** | Terse answer to any dev/terminal question | `ask <question>` | `opus` |
 | **Explain** | Summarize a command in natural, concise English | `explain <command>` | `sonnet` |
-| **Suggest widget** | Rewrite the current line (natural language) → one shell command, in place | `Ctrl+X` | `haiku` |
-| **Explain widget** | Explain the command currently at the prompt, above it (command stays intact) | `Alt+E` | `sonnet` |
+| **Suggest widget** | Rewrite the current line (natural language) → one shell command, in place | <kbd>Ctrl</kbd>+<kbd>X</kbd> | `haiku` |
+| **Explain widget** | Explain the command currently at the prompt, above it (command stays intact) | <kbd>Alt</kbd>+<kbd>E</kbd> | `sonnet` |
 
 ## Requirements
 
@@ -64,9 +64,9 @@ explain find . -type f -exec md5sum {} + | sort | uniq -w32 -dD
 
 Prints one overview line + a short bullet per flag/argument.
 
-### Suggest widget (`Ctrl+X`)
+### Suggest widget (<kbd>Ctrl</kbd>+<kbd>X</kbd>)
 
-Type a natural-language request, then press **Ctrl+X**:
+Type a natural-language request, then press <kbd>Ctrl</kbd>+<kbd>X</kbd>:
 
 ```text
 find all js files larger than 100kb modified in the last week
@@ -78,11 +78,11 @@ becomes:
 find . -name "*.js" -size +100k -mtime -7
 ```
 
-Review the command, press **Enter** to run (or edit first).
+Review the command, press <kbd>Enter</kbd> to run (or edit first).
 
-### Explain widget (`Alt+E`)
+### Explain widget (<kbd>Alt</kbd>+<kbd>E</kbd>)
 
-Type or paste a command at the prompt, then press **Alt+E**. The explanation prints above the prompt; your command stays intact so you can still edit or run it.
+Type or paste a command at the prompt, then press <kbd>Alt</kbd>+<kbd>E</kbd>. The explanation prints above the prompt; your command stays intact so you can still edit or run it.
 
 ## Configuration
 
@@ -131,8 +131,8 @@ bats test/
 **Manual test checklist** before sending a PR that touches the plugin code:
 
 - `ask` and `explain` with `?`, `!`, `*`, and quoted strings
-- Ctrl+X with a clear request and an ambiguous one
-- Alt+E on a typed command - original command must stay intact
+- <kbd>Ctrl</kbd>+<kbd>X</kbd> with a clear request and an ambiguous one
+- <kbd>Alt</kbd>+<kbd>E</kbd> on a typed command - original command must stay intact
 - All four features with `claude` logged out → helpful error, not a crash
 - Custom keybinds set before plugin load
 
