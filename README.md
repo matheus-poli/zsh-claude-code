@@ -125,10 +125,24 @@ Contributions welcome - PRs, bug reports, feature ideas. Quick start:
 ```bash
 git clone https://github.com/matheus-poli/zsh-claude-code
 cd zsh-claude-code
-mise install   # pins zsh, bats, lefthook, commitlint
-lefthook install
-bats test/
+mise run setup     # pinned tools, commitlint deps, git hooks — one command
+mise run check     # lint + unit tests + smoke
 ```
+
+If anything feels off, `mise run doctor` walks through the environment and tells you exactly what's missing.
+
+**First time using [mise](https://mise.jdx.dev)?** Install it once globally (it pins per-project versions of `node`, `bats`, `lefthook`), then the commands above work from any fresh clone.
+
+Available tasks:
+
+| Task | What it does |
+|---|---|
+| `mise run setup` | Pinned tools → commitlint deps → git hooks |
+| `mise run doctor` | Diagnose tools, hooks, and the `claude` CLI |
+| `mise run lint` | `zsh -n` syntax check on plugin + script files |
+| `mise run test` | `bats test/` |
+| `mise run smoke` | End-to-end `ask` call (needs an authenticated `claude` CLI) |
+| `mise run check` | Lint + tests + smoke — run this before sending a PR |
 
 **Commits follow [Conventional Commits](https://www.conventionalcommits.org/)** (`feat:`, `fix:`, `docs:`, `chore:`, …) - enforced by commitlint via a lefthook `commit-msg` hook. This drives automated semver releases.
 

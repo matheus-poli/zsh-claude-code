@@ -49,6 +49,9 @@ zsh-claude-code/
 │   ├── explain.zsh                 # `explain` function + alias
 │   ├── suggest.zsh                 # Ctrl+X widget (`claude-suggest`)
 │   └── explain-widget.zsh          # Alt+E widget (`claude-explain-widget`)
+├── scripts/
+│   ├── setup.zsh                   # unified contributor bootstrap (`mise run setup`)
+│   └── doctor.zsh                  # env diagnostics (`mise run doctor`)
 └── test/
     ├── smoke.zsh                   # end-to-end smoke
     └── *.bats                      # bats-core unit tests
@@ -122,7 +125,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
 - **Branch naming:** `feat/...`, `fix/...`, `docs/...` for PRs; `main` is the default branch.
 - **Shell style:** prefer POSIX-ish zsh. Quote expansions. Use `local` for function vars. `emulate -L zsh` at the top of functions that care about option state.
 - **No emojis in code or commits** unless a user-facing string benefits from one (e.g. the widget's "⏳ asking claude…" placeholder).
-- **Dev environment:** pinned via `mise.toml`. Run `mise install` once after cloning to get the exact `bats`, `lefthook`, and `commitlint` versions the project is built against.
+- **Dev environment:** pinned via `mise.toml`. After cloning, run `mise run setup` — it chains `mise install` → `npm install` → `lefthook install` in one shot (see `scripts/setup.zsh`). `mise run doctor` diagnoses a broken env; `mise run check` runs lint + tests + smoke before a PR.
 
 ## Known issues / TODO
 

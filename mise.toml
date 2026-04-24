@@ -1,5 +1,5 @@
 # Dev environment for zsh-claude-code contributors.
-# `mise install` in the repo root pulls the pinned versions below.
+# First-time setup: install mise (https://mise.jdx.dev), then `mise run setup`.
 
 [tools]
 node     = "20"
@@ -7,15 +7,16 @@ bats     = "1.11.0"
 lefthook = "1.7.15"
 
 [tasks.setup]
-description = "One-time contributor setup"
-run = [
-  "npm install",
-  "lefthook install",
-]
+description = "One-time contributor setup: tools, deps, and git hooks"
+run = "zsh scripts/setup.zsh"
+
+[tasks.doctor]
+description = "Diagnose the contributor environment"
+run = "zsh scripts/doctor.zsh"
 
 [tasks.test]
 description = "Run bats unit tests"
-run = "bats test/plugin.bats"
+run = "bats test/"
 
 [tasks.smoke]
 description = "Run the end-to-end smoke test (requires authenticated claude CLI)"
@@ -23,4 +24,8 @@ run = "zsh test/smoke.zsh"
 
 [tasks.lint]
 description = "zsh -n syntax check on all plugin files"
-run = "for f in zsh-claude-code.plugin.zsh lib/*.zsh; do zsh -n \"$f\"; done"
+run = "for f in zsh-claude-code.plugin.zsh lib/*.zsh scripts/*.zsh; do zsh -n \"$f\"; done"
+
+[tasks.check]
+description = "Run lint + unit tests + smoke"
+run = ["mise run lint", "mise run test", "mise run smoke"]
