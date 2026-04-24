@@ -19,7 +19,9 @@ claude-suggest() {
   frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
   local i=0
   while kill -0 $pid 2>/dev/null; do
-    POSTDISPLAY="  🤖 ${frames[$((i % ${#frames} + 1))]} claude thinking how to do it…"
+    # Leading newline puts the spinner on its own line below the user's
+    # request, so the request stays readable above it.
+    POSTDISPLAY=$'\n'"🤖 ${frames[$((i % ${#frames} + 1))]} claude thinking how to do it…"
     zle -R
     sleep 0.08
     (( i++ ))
