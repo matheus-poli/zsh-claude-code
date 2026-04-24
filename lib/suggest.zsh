@@ -3,17 +3,34 @@
 # Widget: rewrites the current BUFFER (natural language) into a shell command.
 claude-suggest() {
   emulate -L zsh
+  setopt localoptions nomonitor nonotify
   [[ -z "$BUFFER" ]] && return
   local prompt="$BUFFER"
   local original="$BUFFER"
-  BUFFER="⏳ asking claude…"
-  zle -R
-  local result stderr_msg rc stderr_file
-  stderr_file=$(mktemp)
-  result=$(_zsh_claude_code_run "$ZSH_CLAUDE_SUGGEST_MODEL" "$ZSH_CLAUDE_SUGGEST_SYSTEM_PROMPT" "$prompt" 2>"$stderr_file")
-  rc=$?
-  stderr_msg=$(<"$stderr_file")
-  rm -f "$stderr_file"
+
+  local out_file err_file
+  out_file=$(mktemp) err_file=$(mktemp)
+  ( _zsh_claude_code_run "$ZSH_CLAUDE_SUGGEST_MODEL" "$ZSH_CLAUDE_SUGGEST_SYSTEM_PROMPT" "$prompt" >"$out_file" 2>"$err_file" ) &
+  local pid=$!
+
+  local -a frames
+  frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+  local i=0
+  while kill -0 $pid 2>/dev/null; do
+    BUFFER="🤖 ${frames[$((i % ${#frames} + 1))]} thinking…"
+    CURSOR=${#BUFFER}
+    zle -R
+    sleep 0.08
+    (( i++ ))
+  done
+  wait $pid 2>/dev/null
+  local rc=$?
+
+  local result stderr_msg
+  result=$(<"$out_file")
+  stderr_msg=$(<"$err_file")
+  rm -f "$out_file" "$err_file"
+
   if (( rc != 0 )) || [[ -z "$result" ]]; then
     BUFFER="$original"
     CURSOR=${#BUFFER}
@@ -22,6 +39,7 @@ claude-suggest() {
     zle reset-prompt
     return $rc
   fi
+
   # Defensive scrub: strip fences, backticks, collapse newlines, trim whitespace.
   result="${result//\`\`\`*$'\n'/}"
   result="${result//\`\`\`/}"
