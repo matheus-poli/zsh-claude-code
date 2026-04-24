@@ -1,9 +1,9 @@
 # Shared defaults and runner for zsh-claude-code.
 # Users may override any ZSH_CLAUDE_* var in .zshrc before loading the plugin.
 
-: ${ZSH_CLAUDE_ASK_MODEL:=opus}
+: ${ZSH_CLAUDE_ASK_MODEL:=sonnet}
 : ${ZSH_CLAUDE_EXPLAIN_MODEL:=sonnet}
-: ${ZSH_CLAUDE_SUGGEST_MODEL:=haiku}
+: ${ZSH_CLAUDE_SUGGEST_MODEL:=sonnet}
 : ${ZSH_CLAUDE_SUGGEST_KEY:=^X}
 : ${ZSH_CLAUDE_EXPLAIN_KEY:=^[e}
 : ${ZSH_CLAUDE_EXTRA_FLAGS:=}

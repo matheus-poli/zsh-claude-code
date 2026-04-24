@@ -58,9 +58,9 @@ zsh-claude-code/
 
 Declared with `: ${VAR:=default}` so user exports in `.zshrc` **before** plugin load take precedence. (Models can be changed at runtime by re-exporting the var; keybinds cannot — the bind happens once at source time.)
 
-- `ZSH_CLAUDE_ASK_MODEL` — default `opus`
+- `ZSH_CLAUDE_ASK_MODEL` — default `sonnet`
 - `ZSH_CLAUDE_EXPLAIN_MODEL` — default `sonnet`
-- `ZSH_CLAUDE_SUGGEST_MODEL` — default `haiku`
+- `ZSH_CLAUDE_SUGGEST_MODEL` — default `sonnet`
 - `ZSH_CLAUDE_SUGGEST_KEY` — default `^X`
 - `ZSH_CLAUDE_EXPLAIN_KEY` — default `^[e` (Alt+E; overrides the rarely-used `capitalize-word`)
 - `ZSH_CLAUDE_ASK_SYSTEM_PROMPT` — full override of the `ask` system prompt
@@ -75,7 +75,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
 - **Why `--system-prompt` (full replace) instead of `--append-system-prompt`?** Claude Code's default system prompt is large and biased toward agentic tool-use. For quick terminal Q&A we don't want that context — full replace is faster and produces tighter answers.
 - **Why `--tools ""`?** These helpers are text-in/text-out. Disabling tools prevents Claude from trying to read files or run commands, which would surprise the user and slow down responses.
 - **Why not `--bare`?** `--bare` disables OAuth and the keychain, so users logged in via `claude login` would break. Stick to lighter flags that preserve auth.
-- **Model choice per feature.** `suggest` (widget) needs speed under ~2s and a trivial task → Haiku. `explain` produces prose and benefits from clearer wording → Sonnet. `ask` is open-ended and benefits from the strongest model → Opus.
+- **Model choice.** All three features default to Sonnet. We originally picked Haiku for `suggest` on a "smaller-faster" hypothesis, but live-API measurements showed the opposite — Sonnet was consistently 2-3x faster wall-clock on short tools-disabled prompts. Users can still override per-feature via `ZSH_CLAUDE_*_MODEL` to pick Opus (stronger answers) or Haiku (cheaper tokens, expect higher latency today).
 - **Why a dedicated widget keybind instead of overriding Enter or a `#` prefix?** Overriding `accept-line` means every single Enter press goes through our hook forever; a keybind is opt-in per keystroke and leaves default behavior untouched.
 - **Suggest widget replaces `BUFFER`; explain widget does not.** `suggest` is a command-authoring flow — the user reviews the generated command and presses Enter. `explain` is a read-only flow — we print above the prompt with `zle -I` + `print` + `zle reset-prompt` so the user's typed command is preserved and can still be run or edited.
 - **Why `noglob` on the aliases?** Users type questions/commands with `?`, `*`, `[...]`, which zsh would otherwise try to expand as globs and error out with "no matches found".

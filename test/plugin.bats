@@ -72,9 +72,9 @@ SH
     print -r -- \"ek=\$ZSH_CLAUDE_EXPLAIN_KEY\"
   "
   [ "$status" -eq 0 ]
-  [[ "$output" == *"ask=opus"* ]]
+  [[ "$output" == *"ask=sonnet"* ]]
   [[ "$output" == *"explain=sonnet"* ]]
-  [[ "$output" == *"suggest=haiku"* ]]
+  [[ "$output" == *"suggest=sonnet"* ]]
   [[ "$output" == *"sk=^X"* ]]
   [[ "$output" == *"ek=^[e"* ]]
 }
