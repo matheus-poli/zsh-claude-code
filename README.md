@@ -136,13 +136,6 @@ bats test/
 
 See [CLAUDE.md](./CLAUDE.md) for design notes and the full rationale behind each decision.
 
-## Related projects
-
-- [`HundredAcreStudio/zsh-claude`](https://github.com/HundredAcreStudio/zsh-claude) - talks to the Anthropic API directly (curl + jq). Different backend, requires a personal API key.
-- [`ArielTM/zsh-claude-code-shell`](https://github.com/ArielTM/zsh-claude-code-shell) - also wraps the `claude` CLI, but triggers on `# <description>` + Enter (overrides `accept-line`) instead of a dedicated keybind. No `ask`/`explain` commands.
-
-If your usage pattern fits one of those better, use them - there's no hard feelings here.
-
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
