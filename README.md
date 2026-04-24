@@ -4,7 +4,7 @@ Claude-powered helpers for your zsh prompt. Ask questions, explain commands, and
 
 All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overview) (Claude Code) in `--print` mode, so if you're already logged in with `claude login` there's nothing else to set up.
 
-<img width="1913" height="1001" alt="WindowsTerminal_mj66aCbq41" src="https://github.com/user-attachments/assets/2f122153-89ba-443a-8db0-5319f7ceb2ea" />
+<img width="916" height="520" alt="WindowsTerminal_CeQeVY48Uk" src="https://github.com/user-attachments/assets/5f63970d-b601-4e22-8cef-797ddccd791d" />
 
 ## Features
 
