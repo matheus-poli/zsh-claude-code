@@ -1,6 +1,6 @@
 : ${ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT:='You explain shell commands for a zsh user. First one line on what the command does overall, then a short bullet per flag/argument. Plain text, no markdown headers. No preamble ("This command..."), start directly.'}
 
-unfunction explain 2>/dev/null
+(( $+functions[explain] )) && unfunction explain
 
 _zsh_claude_code_explain() {
   emulate -L zsh

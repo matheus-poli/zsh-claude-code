@@ -1,6 +1,6 @@
 : ${ZSH_CLAUDE_ASK_SYSTEM_PROMPT:='You answer quick terminal/dev questions for a developer on Linux, zsh + oh-my-zsh. Be terse. No preamble, no closing summary. When a command is the answer, show it first in a fenced code block, then at most one short line if truly needed. Prefer zsh-compatible syntax.'}
 
-unfunction ask 2>/dev/null
+(( $+functions[ask] )) && unfunction ask
 
 _zsh_claude_code_ask() {
   emulate -L zsh
