@@ -1,6 +1,6 @@
 # zsh-claude-code
 
-Claude-powered helpers for your zsh prompt. Ask questions, explain commands, and turn natural language into shell commands — without leaving the terminal.
+Claude-powered helpers for your zsh prompt. Ask questions, explain commands, and turn natural language into shell commands - without leaving the terminal.
 
 All four features wrap the [`claude` CLI](https://claude.ai/claude-code) (Claude Code) in `--print` mode, so if you're already logged in with `claude login` there's nothing else to set up.
 
@@ -84,7 +84,7 @@ Type or paste a command at the prompt, then press **Alt+E**. The explanation pri
 
 ## Configuration
 
-Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds — they're resolved at source time).
+Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds - they're resolved at source time).
 
 | Variable | Default | Description |
 |---|---|---|
@@ -101,20 +101,20 @@ Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds 
 ### Example: change keybind and use a stronger suggest model
 
 ```sh
-# ~/.zshrc — BEFORE the plugins=(...) line
+# ~/.zshrc - BEFORE the plugins=(...) line
 export ZSH_CLAUDE_SUGGEST_KEY='^G'         # Ctrl+G instead of Ctrl+X
 export ZSH_CLAUDE_SUGGEST_MODEL='sonnet'   # more accurate, slightly slower
 ```
 
 ## Troubleshooting
 
-- **"command not found: claude"** — the plugin no-ops gracefully when `claude` isn't on `$PATH`. Install Claude Code and run `claude login`.
-- **Widget doesn't fire** — another plugin may have rebound `^X`. Try setting `ZSH_CLAUDE_SUGGEST_KEY` to something else, or use `bindkey | grep claude` to confirm the binding.
-- **Output has stray backticks / code fences** — please open an issue with the input that produced it. The suggest widget already scrubs fences defensively, but prompts evolve.
+- **"command not found: claude"** - the plugin no-ops gracefully when `claude` isn't on `$PATH`. Install Claude Code and run `claude login`.
+- **Widget doesn't fire** - another plugin may have rebound `^X`. Try setting `ZSH_CLAUDE_SUGGEST_KEY` to something else, or use `bindkey | grep claude` to confirm the binding.
+- **Output has stray backticks / code fences** - please open an issue with the input that produced it. The suggest widget already scrubs fences defensively, but prompts evolve.
 
 ## Contributing
 
-Contributions welcome — PRs, bug reports, feature ideas. Quick start:
+Contributions welcome - PRs, bug reports, feature ideas. Quick start:
 
 ```sh
 git clone https://github.com/matheus-poli/zsh-claude-code
@@ -124,13 +124,13 @@ lefthook install
 bats test/
 ```
 
-**Commits follow [Conventional Commits](https://www.conventionalcommits.org/)** (`feat:`, `fix:`, `docs:`, `chore:`, …) — enforced by commitlint via a lefthook `commit-msg` hook. This drives automated semver releases.
+**Commits follow [Conventional Commits](https://www.conventionalcommits.org/)** (`feat:`, `fix:`, `docs:`, `chore:`, …) - enforced by commitlint via a lefthook `commit-msg` hook. This drives automated semver releases.
 
 **Manual test checklist** before sending a PR that touches the plugin code:
 
 - `ask` and `explain` with `?`, `!`, `*`, and quoted strings
 - Ctrl+X with a clear request and an ambiguous one
-- Alt+E on a typed command — original command must stay intact
+- Alt+E on a typed command - original command must stay intact
 - All four features with `claude` logged out → helpful error, not a crash
 - Custom keybinds set before plugin load
 
@@ -138,10 +138,10 @@ See [CLAUDE.md](./CLAUDE.md) for design notes and the full rationale behind each
 
 ## Related projects
 
-- [`HundredAcreStudio/zsh-claude`](https://github.com/HundredAcreStudio/zsh-claude) — talks to the Anthropic API directly (curl + jq). Different backend, requires a personal API key.
-- [`ArielTM/zsh-claude-code-shell`](https://github.com/ArielTM/zsh-claude-code-shell) — also wraps the `claude` CLI, but triggers on `# <description>` + Enter (overrides `accept-line`) instead of a dedicated keybind. No `ask`/`explain` commands.
+- [`HundredAcreStudio/zsh-claude`](https://github.com/HundredAcreStudio/zsh-claude) - talks to the Anthropic API directly (curl + jq). Different backend, requires a personal API key.
+- [`ArielTM/zsh-claude-code-shell`](https://github.com/ArielTM/zsh-claude-code-shell) - also wraps the `claude` CLI, but triggers on `# <description>` + Enter (overrides `accept-line`) instead of a dedicated keybind. No `ask`/`explain` commands.
 
-If your usage pattern fits one of those better, use them — there's no hard feelings here.
+If your usage pattern fits one of those better, use them - there's no hard feelings here.
 
 ## Contributors
 
