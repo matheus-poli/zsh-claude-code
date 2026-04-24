@@ -24,3 +24,37 @@ _zsh_claude_code_run() {
     "${extra[@]}" \
     "$prompt"
 }
+
+# Friendly error reporter for widgets. Detects common auth failures and
+# appends a one-line hint pointing the user at `claude login`.
+# Usage: _zsh_claude_code_report_error <stderr_text> <exit_code> [feature_name]
+_zsh_claude_code_report_error() {
+  emulate -L zsh
+  local msg=$1 rc=$2 feature=${3:-claude}
+  print -r -- "zsh-claude-code: $feature failed (exit $rc)"
+  if [[ -n "$msg" ]]; then
+    local -a lines
+    lines=("${(@f)msg}")
+    [[ -n "${lines[1]}" ]] && print -r -- "  ${lines[1]}"
+  fi
+  local lmsg=${msg:l}
+  if [[ -z "$msg" \
+     || "$lmsg" == *login* \
+     || "$lmsg" == *"api key"* \
+     || "$lmsg" == *auth* \
+     || "$lmsg" == *unauthorized* \
+     || "$lmsg" == *unauthorised* \
+     || "$lmsg" == *forbidden* \
+     || "$lmsg" == *credential* \
+     || "$lmsg" == *token* ]]; then
+    print -r -- "  hint: not logged in? run \`claude login\` (or set ANTHROPIC_API_KEY)"
+  fi
+}
+
+# Friendly error reporter for non-widget commands (ask / explain). Prints
+# a single hint line to stderr after claude's own error has already shown.
+_zsh_claude_code_command_hint() {
+  emulate -L zsh
+  local rc=$1 feature=${2:-claude}
+  print -r -- "zsh-claude-code: $feature failed (exit $rc). Not logged in? Run \`claude login\` (or set ANTHROPIC_API_KEY)." >&2
+}

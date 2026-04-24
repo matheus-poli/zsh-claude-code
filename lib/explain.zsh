@@ -9,5 +9,8 @@ _zsh_claude_code_explain() {
     return 2
   fi
   _zsh_claude_code_run "$ZSH_CLAUDE_EXPLAIN_MODEL" "$ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT" "$*"
+  local rc=$?
+  (( rc != 0 )) && _zsh_claude_code_command_hint $rc explain
+  return $rc
 }
 alias explain='noglob _zsh_claude_code_explain'

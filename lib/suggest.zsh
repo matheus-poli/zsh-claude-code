@@ -8,13 +8,18 @@ claude-suggest() {
   local original="$BUFFER"
   BUFFER="⏳ asking claude…"
   zle -R
-  local result rc
-  result=$(_zsh_claude_code_run "$ZSH_CLAUDE_SUGGEST_MODEL" "$ZSH_CLAUDE_SUGGEST_SYSTEM_PROMPT" "$prompt" 2>/dev/null)
+  local result stderr_msg rc stderr_file
+  stderr_file=$(mktemp)
+  result=$(_zsh_claude_code_run "$ZSH_CLAUDE_SUGGEST_MODEL" "$ZSH_CLAUDE_SUGGEST_SYSTEM_PROMPT" "$prompt" 2>"$stderr_file")
   rc=$?
+  stderr_msg=$(<"$stderr_file")
+  rm -f "$stderr_file"
   if (( rc != 0 )) || [[ -z "$result" ]]; then
     BUFFER="$original"
     CURSOR=${#BUFFER}
-    zle -R
+    zle -I
+    _zsh_claude_code_report_error "$stderr_msg" "$rc" "suggest"
+    zle reset-prompt
     return $rc
   fi
   # Defensive scrub: strip fences, backticks, collapse newlines, trim whitespace.

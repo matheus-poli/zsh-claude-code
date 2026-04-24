@@ -9,6 +9,9 @@ _zsh_claude_code_ask() {
     return 2
   fi
   _zsh_claude_code_run "$ZSH_CLAUDE_ASK_MODEL" "$ZSH_CLAUDE_ASK_SYSTEM_PROMPT" "$*"
+  local rc=$?
+  (( rc != 0 )) && _zsh_claude_code_command_hint $rc ask
+  return $rc
 }
 # noglob so `?`, `*`, `[...]` in questions don't get expanded by zsh.
 alias ask='noglob _zsh_claude_code_ask'

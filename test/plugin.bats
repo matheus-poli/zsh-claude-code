@@ -118,6 +118,48 @@ SH
   [[ "$output" == *"explain_widget_defined"* ]]
 }
 
+@test "ask: prints login hint when claude exits non-zero" {
+  # Stub claude that simulates a logged-out CLI.
+  cat > "$STUB_DIR/claude" <<'SH'
+#!/bin/sh
+echo "Invalid API key. Please run /login" >&2
+exit 1
+SH
+  chmod +x "$STUB_DIR/claude"
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_ask hello 2>&1
+    print -r -- \"rc=\$?\"
+  "
+  [[ "$output" == *"Invalid API key"* ]]
+  [[ "$output" == *"claude login"* ]]
+  [[ "$output" == *"ask failed"* ]]
+  [[ "$output" == *"rc=1"* ]]
+}
+
+@test "report_error: generic non-auth error does not force login hint" {
+  stub_claude
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_report_error 'Network timeout' 2 suggest
+  "
+  [[ "$output" == *"suggest failed (exit 2)"* ]]
+  [[ "$output" == *"Network timeout"* ]]
+  [[ "$output" != *"claude login"* ]]
+}
+
+@test "report_error: auth-ish error adds login hint" {
+  stub_claude
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_report_error 'Unauthorized: missing credential' 1 suggest
+  "
+  [[ "$output" == *"claude login"* ]]
+}
+
 @test "ask: joins multiple words into one prompt arg" {
   stub_claude
   # Call the underlying function directly — the `noglob` alias only expands

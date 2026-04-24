@@ -6,11 +6,14 @@ claude-explain-widget() {
   local cmd="$BUFFER"
   zle -I
   print -r -- "⏳ asking claude to explain…"
-  local result rc
-  result=$(_zsh_claude_code_run "$ZSH_CLAUDE_EXPLAIN_MODEL" "$ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT" "$cmd" 2>/dev/null)
+  local result stderr_msg rc stderr_file
+  stderr_file=$(mktemp)
+  result=$(_zsh_claude_code_run "$ZSH_CLAUDE_EXPLAIN_MODEL" "$ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT" "$cmd" 2>"$stderr_file")
   rc=$?
+  stderr_msg=$(<"$stderr_file")
+  rm -f "$stderr_file"
   if (( rc != 0 )) || [[ -z "$result" ]]; then
-    print -r -- "zsh-claude-code: explain failed" >&2
+    _zsh_claude_code_report_error "$stderr_msg" "$rc" "explain"
     zle reset-prompt
     return $rc
   fi
