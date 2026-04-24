@@ -25,7 +25,7 @@ All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overvi
 
 If you use [oh-my-zsh](https://ohmyz.sh/), clone into the custom plugins dir:
 
-```sh
+```bash
 git clone https://github.com/matheus-poli/zsh-claude-code \
   "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-claude-code"
 ```
@@ -34,14 +34,14 @@ Add `zsh-claude-code` to your `plugins=(...)` in `~/.zshrc`, then restart your s
 
 ### Manual
 
-```sh
+```bash
 git clone https://github.com/matheus-poli/zsh-claude-code ~/.zsh-claude-code
 echo 'source ~/.zsh-claude-code/zsh-claude-code.plugin.zsh' >> ~/.zshrc
 ```
 
 ### zinit
 
-```sh
+```bash
 zinit light matheus-poli/zsh-claude-code
 ```
 
@@ -49,7 +49,7 @@ zinit light matheus-poli/zsh-claude-code
 
 ### `ask`
 
-```sh
+```bash
 ask how do I list files modified in the last 24 hours
 ask "what's the difference between \$* and \$@ in zsh?"
 ```
@@ -58,7 +58,7 @@ Prints a terse answer. If the answer is a command, it shows the command first in
 
 ### `explain`
 
-```sh
+```bash
 explain find . -type f -exec md5sum {} + | sort | uniq -w32 -dD
 ```
 
@@ -74,7 +74,7 @@ find all js files larger than 100kb modified in the last week
 
 becomes:
 
-```sh
+```bash
 find . -name "*.js" -size +100k -mtime -7
 ```
 
@@ -102,7 +102,7 @@ Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds 
 
 ### Example: change keybind and use a stronger suggest model
 
-```sh
+```bash
 # ~/.zshrc - BEFORE the plugins=(...) line
 export ZSH_CLAUDE_SUGGEST_KEY='^G'         # Ctrl+G instead of Ctrl+X
 export ZSH_CLAUDE_SUGGEST_MODEL='sonnet'   # more accurate, slightly slower
@@ -118,7 +118,7 @@ export ZSH_CLAUDE_SUGGEST_MODEL='sonnet'   # more accurate, slightly slower
 
 Contributions welcome - PRs, bug reports, feature ideas. Quick start:
 
-```sh
+```bash
 git clone https://github.com/matheus-poli/zsh-claude-code
 cd zsh-claude-code
 mise install   # pins zsh, bats, lefthook, commitlint
