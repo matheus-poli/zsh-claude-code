@@ -58,3 +58,4 @@ _zsh_claude_code_command_hint() {
   local rc=$1 feature=${2:-claude}
   print -r -- "zsh-claude-code: $feature failed (exit $rc). Not logged in? Run \`claude login\` (or set ANTHROPIC_API_KEY)." >&2
 }
+

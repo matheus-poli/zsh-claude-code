@@ -9,9 +9,13 @@ pre-commit:
     zsh-syntax:
       glob: "*.zsh"
       run: |
+        set -e
         for f in {staged_files}; do
-          zsh -n "$f" || exit 1
+          zsh -n "$f"
         done
     bats:
-      glob: "{lib/*.zsh,zsh-claude-code.plugin.zsh,test/*.bats}"
+      # Run the full suite on every commit. It takes ~1s and catches
+      # regressions in plugin code, test files, or refactors that don't
+      # change a .zsh file directly (eg. a lefthook or mise tweak that
+      # breaks the test runner itself).
       run: bats test/plugin.bats
