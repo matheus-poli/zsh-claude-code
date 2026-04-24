@@ -1,0 +1,17 @@
+commit-msg:
+  commands:
+    commitlint:
+      run: npx --no -- commitlint --edit {1}
+
+pre-commit:
+  parallel: true
+  commands:
+    zsh-syntax:
+      glob: "*.zsh"
+      run: |
+        for f in {staged_files}; do
+          zsh -n "$f" || exit 1
+        done
+    bats:
+      glob: "{lib/*.zsh,zsh-claude-code.plugin.zsh,test/*.bats}"
+      run: bats test/plugin.bats

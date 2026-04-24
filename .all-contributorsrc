@@ -1,0 +1,23 @@
+{
+  "projectName": "zsh-claude-code",
+  "projectOwner": "matheus-poli",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": ["README.md"],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "angular",
+  "commitType": "docs",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "matheus-poli",
+      "name": "Matheus Poli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25781749?v=4",
+      "profile": "https://github.com/matheus-poli",
+      "contributions": ["code", "doc", "maintenance", "design", "ideas"]
+    }
+  ],
+  "contributorsSortAlphabetically": false,
+  "linkToUsage": true
+}

@@ -1,0 +1,26 @@
+# Dev environment for zsh-claude-code contributors.
+# `mise install` in the repo root pulls the pinned versions below.
+
+[tools]
+node     = "20"
+bats     = "1.11.0"
+lefthook = "1.7.15"
+
+[tasks.setup]
+description = "One-time contributor setup"
+run = [
+  "npm install",
+  "lefthook install",
+]
+
+[tasks.test]
+description = "Run bats unit tests"
+run = "bats test/plugin.bats"
+
+[tasks.smoke]
+description = "Run the end-to-end smoke test (requires authenticated claude CLI)"
+run = "zsh test/smoke.zsh"
+
+[tasks.lint]
+description = "zsh -n syntax check on all plugin files"
+run = "for f in zsh-claude-code.plugin.zsh lib/*.zsh; do zsh -n \"$f\"; done"
