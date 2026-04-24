@@ -11,7 +11,7 @@ All four features wrap the [`claude` CLI](https://claude.ai/claude-code) (Claude
 | **Ask** | Terse answer to any dev/terminal question | `ask <question>` | `opus` |
 | **Explain** | Summarize a command in natural, concise English | `explain <command>` | `sonnet` |
 | **Suggest widget** | Rewrite the current line (natural language) → one shell command, in place | `Ctrl+X` | `haiku` |
-| **Explain widget** | Explain the command currently at the prompt, above it (command stays intact) | `Ctrl+X Ctrl+E` | `sonnet` |
+| **Explain widget** | Explain the command currently at the prompt, above it (command stays intact) | `Alt+E` | `sonnet` |
 
 ## Requirements
 
@@ -78,9 +78,9 @@ find . -name "*.js" -size +100k -mtime -7
 
 Review the command, press **Enter** to run (or edit first).
 
-### Explain widget (`Ctrl+X Ctrl+E`)
+### Explain widget (`Alt+E`)
 
-Type or paste a command at the prompt, then press **Ctrl+X Ctrl+E**. The explanation prints above the prompt; your command stays intact so you can still edit or run it.
+Type or paste a command at the prompt, then press **Alt+E**. The explanation prints above the prompt; your command stays intact so you can still edit or run it.
 
 ## Configuration
 
@@ -92,7 +92,7 @@ Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds 
 | `ZSH_CLAUDE_EXPLAIN_MODEL` | `sonnet` | Model for `explain` + explain widget |
 | `ZSH_CLAUDE_SUGGEST_MODEL` | `haiku` | Model for the suggest widget |
 | `ZSH_CLAUDE_SUGGEST_KEY` | `^X` | Keybind for the suggest widget |
-| `ZSH_CLAUDE_EXPLAIN_KEY` | `^X^E` | Keybind for the explain widget |
+| `ZSH_CLAUDE_EXPLAIN_KEY` | `^[e` | Keybind for the explain widget (`^[e` = Alt+E) |
 | `ZSH_CLAUDE_ASK_SYSTEM_PROMPT` | *(built-in)* | Full override of the `ask` system prompt |
 | `ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT` | *(built-in)* | Full override of the `explain` system prompt |
 | `ZSH_CLAUDE_SUGGEST_SYSTEM_PROMPT` | *(built-in)* | Full override of the suggest system prompt |
@@ -130,7 +130,7 @@ bats test/
 
 - `ask` and `explain` with `?`, `!`, `*`, and quoted strings
 - Ctrl+X with a clear request and an ambiguous one
-- Ctrl+X Ctrl+E on a typed command — original command must stay intact
+- Alt+E on a typed command — original command must stay intact
 - All four features with `claude` logged out → helpful error, not a crash
 - Custom keybinds set before plugin load
 

@@ -5,7 +5,7 @@
 : ${ZSH_CLAUDE_EXPLAIN_MODEL:=sonnet}
 : ${ZSH_CLAUDE_SUGGEST_MODEL:=haiku}
 : ${ZSH_CLAUDE_SUGGEST_KEY:=^X}
-: ${ZSH_CLAUDE_EXPLAIN_KEY:=^X^E}
+: ${ZSH_CLAUDE_EXPLAIN_KEY:=^[e}
 : ${ZSH_CLAUDE_EXTRA_FLAGS:=}
 
 # Invoke `claude -p` with shared tuned flags.

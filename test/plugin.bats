@@ -76,7 +76,7 @@ SH
   [[ "$output" == *"explain=sonnet"* ]]
   [[ "$output" == *"suggest=haiku"* ]]
   [[ "$output" == *"sk=^X"* ]]
-  [[ "$output" == *"ek=^X^E"* ]]
+  [[ "$output" == *"ek=^[e"* ]]
 }
 
 @test "env: user overrides set before load are preserved" {

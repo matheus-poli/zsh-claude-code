@@ -5,7 +5,7 @@ A zsh plugin that adds Claude-powered helpers to the terminal:
 - **`ask <question>`** — one-shot Q&A, prints a terse answer directly to the terminal.
 - **`explain <command>`** — summarize a shell command in natural, concise English.
 - **Ctrl+X widget** (`claude-suggest`) — rewrites the current command line (a natural-language request) into an executable shell command, in place. The user reviews and presses Enter to run (or edits first).
-- **Ctrl+X Ctrl+E widget** (`claude-explain-widget`) — explains the command currently typed at the prompt, printing the explanation above it while leaving the command intact.
+- **Alt+E widget** (`claude-explain-widget`) — explains the command currently typed at the prompt, printing the explanation above it while leaving the command intact.
 
 All four use the `claude` CLI (Claude Code) in `--print` mode under the hood. The plugin is a thin, zero-runtime-dependency wrapper that:
 
@@ -48,7 +48,7 @@ zsh-claude-code/
 │   ├── ask.zsh                     # `ask` function + alias
 │   ├── explain.zsh                 # `explain` function + alias
 │   ├── suggest.zsh                 # Ctrl+X widget (`claude-suggest`)
-│   └── explain-widget.zsh          # Ctrl+X Ctrl+E widget (`claude-explain-widget`)
+│   └── explain-widget.zsh          # Alt+E widget (`claude-explain-widget`)
 └── test/
     ├── smoke.zsh                   # end-to-end smoke
     └── *.bats                      # bats-core unit tests
@@ -62,7 +62,7 @@ Declared with `: ${VAR:=default}` so user exports in `.zshrc` **before** plugin 
 - `ZSH_CLAUDE_EXPLAIN_MODEL` — default `sonnet`
 - `ZSH_CLAUDE_SUGGEST_MODEL` — default `haiku`
 - `ZSH_CLAUDE_SUGGEST_KEY` — default `^X`
-- `ZSH_CLAUDE_EXPLAIN_KEY` — default `^X^E`
+- `ZSH_CLAUDE_EXPLAIN_KEY` — default `^[e` (Alt+E; overrides the rarely-used `capitalize-word`)
 - `ZSH_CLAUDE_ASK_SYSTEM_PROMPT` — full override of the `ask` system prompt
 - `ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT` — full override of the `explain` / explain-widget system prompt
 - `ZSH_CLAUDE_SUGGEST_SYSTEM_PROMPT` — full override of the suggest-widget system prompt
@@ -92,7 +92,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
   - `ask` and `explain` with special chars (`?`, `!`, `*`, quotes)
   - Ctrl+X with a clear command request ("find files larger than 10mb")
   - Ctrl+X with an ambiguous request (should still produce one command)
-  - Ctrl+X Ctrl+E on a typed command — explanation prints above, original command is preserved
+  - Alt+E on a typed command — explanation prints above, original command is preserved
   - All features with `claude` logged out → helpful error, not a crash
   - Custom keybinds via `ZSH_CLAUDE_SUGGEST_KEY` / `ZSH_CLAUDE_EXPLAIN_KEY` set *before* plugin load
 - **Why no Bashly?** Bashly generates bash CLIs. The core value here is a zsh ZLE widget, which is zsh-only. A single sourceable `.plugin.zsh` is what oh-my-zsh expects; Bashly would add build-step overhead for no gain.
