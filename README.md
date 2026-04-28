@@ -68,10 +68,12 @@ Prints a terse answer. If the answer is a command, it shows the command first in
 ### `explain`
 
 ```bash
-explain find . -type f -exec md5sum {} + | sort | uniq -w32 -dD
+explain 'find . -type f -exec md5sum {} + | sort | uniq -w32 -dD'
 ```
 
 Prints one overview line + a short bullet per flag/argument.
+
+Wrap the command in single quotes whenever it contains shell metacharacters (`|`, `>`, `<`, `&`, `;`, `$`, backticks). `noglob` only suppresses glob expansion (`*`, `?`, `[...]`); it doesn't stop zsh from parsing pipes or redirects, so an unquoted pipeline would actually run.
 
 ### Suggest widget (<kbd>Ctrl</kbd>+<kbd>X</kbd>)
 
