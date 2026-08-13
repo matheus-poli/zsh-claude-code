@@ -1,0 +1,25 @@
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # Opens (and keeps updating) a release PR that bumps version.txt and
+      # CHANGELOG.md from the Conventional Commits on main. Merging that PR is
+      # what actually cuts the tag and the GitHub release.
+      #
+      # Note: because this runs as GITHUB_TOKEN, the release PR it opens will
+      # not trigger ci.yml. Swap in a PAT via `token:` if you want CI to run on
+      # the release PR itself.
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
