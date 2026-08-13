@@ -58,6 +58,22 @@ SH
   [[ "$output" == *"widget_not_bound"* ]]
 }
 
+@test "guard: plugin re-sources cleanly once ask/explain aliases exist" {
+  stub_claude
+  # After the first load, `ask`/`explain` are aliases (lib/ask.zsh,
+  # lib/explain.zsh). Re-sourcing must not alias-expand the guard stub
+  # names while the if-block is parsed (regression: "defining function
+  # based on alias `ask'" + "parse error near `()'").
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh' && print -r -- resourced_ok
+  "
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"resourced_ok"* ]]
+  [[ "$output" != *"parse error"* ]]
+}
+
 @test "env: defaults are applied when nothing is set" {
   stub_claude
   run zsh -c "

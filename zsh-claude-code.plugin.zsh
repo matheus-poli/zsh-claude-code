@@ -6,8 +6,8 @@ if ! command -v claude >/dev/null 2>&1; then
     print -r -- "zsh-claude-code: \`claude\` CLI not found in PATH. See https://claude.ai/claude-code" >&2
     return 127
   }
-  ask()     { _zsh_claude_code_missing; }
-  explain() { _zsh_claude_code_missing; }
+  function ask     { _zsh_claude_code_missing; }
+  function explain { _zsh_claude_code_missing; }
   return 0
 fi
 
