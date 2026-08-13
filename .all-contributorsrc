@@ -3,7 +3,9 @@
   "projectOwner": "matheus-poli",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "imageSize": 100,
   "commit": true,
   "commitConvention": "angular",
@@ -15,7 +17,22 @@
       "name": "Matheus Poli",
       "avatar_url": "https://avatars.githubusercontent.com/u/25781749?v=4",
       "profile": "https://github.com/matheus-poli",
-      "contributions": ["code", "doc", "maintenance", "design", "ideas"]
+      "contributions": [
+        "code",
+        "doc",
+        "maintenance",
+        "design",
+        "ideas"
+      ]
+    },
+    {
+      "login": "YukiNishigaya",
+      "name": "Yuki Nishigaya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/235177430?v=4",
+      "profile": "https://github.com/YukiNishigaya",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsSortAlphabetically": false,
