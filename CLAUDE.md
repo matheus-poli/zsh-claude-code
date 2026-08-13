@@ -99,16 +99,17 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
   - All features with `claude` logged out → helpful error, not a crash
   - Custom keybinds via `ZSH_CLAUDE_SUGGEST_KEY` / `ZSH_CLAUDE_EXPLAIN_KEY` set *before* plugin load
 - **Why no Bashly?** Bashly generates bash CLIs. The core value here is a zsh ZLE widget, which is zsh-only. A single sourceable `.plugin.zsh` is what oh-my-zsh expects; Bashly would add build-step overhead for no gain.
-- **CI.** GitHub Actions runs the bats suite on each PR once the repo is public.
+- **CI.** Not set up yet — there is no `.github/workflows/`, so nothing runs automatically on a PR. Until it exists, a reviewer has to run `mise run check` locally against the contributor's branch. Actions is free with unlimited minutes on public repos, so this is a gap to close, not a cost constraint. The local `lefthook` hooks (`pre-commit`: `zsh -n` + bats, `pre-push`: `mise run check`) are the only automated gate today, and they only protect contributors who ran `mise run setup`.
 
 ## Release / versioning
 
 - **Strict [SemVer 2.0](https://semver.org/).** Start at `0.1.0`.
-- Release flow is automated from commit history via Conventional Commits + `release-please` (or equivalent):
+- Releases are cut **manually** today (`git tag` + `gh release create`); there is no `release-please` config or workflow yet. Automating it is planned. The bump is read off the commit history per Conventional Commits:
   - `feat:` → MINOR bump
   - `fix:` → PATCH bump
   - `feat!:` / `BREAKING CHANGE:` footer → MAJOR bump
   - `chore:`, `docs:`, `test:`, `refactor:` → no release
+- No `CHANGELOG.md` yet — the GitHub release notes serve that role. Adopting `release-please` would introduce one.
 - Users install by cloning into `$ZSH_CUSTOM/plugins/zsh-claude-code` and adding `zsh-claude-code` to `plugins=(...)`. No package-manager integration for v0.1.
 - Later: submit to `zinit`, `antidote`, Homebrew if there's demand.
 
