@@ -117,10 +117,12 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
   - `feat:` → MINOR bump
   - `fix:` → PATCH bump
   - `feat!:` / `BREAKING CHANGE:` footer → MAJOR bump (not MINOR — `bump-minor-pre-major` is left off, so a breaking change at 0.x goes to 1.0.0, per the strict-SemVer line above)
-  - `chore:`, `docs:`, `test:`, `refactor:` → no release, but `docs:` and `refactor:` still show up in the changelog (see `changelog-sections`); `chore:`, `ci:`, `test:`, `build:`, `style:` are hidden
+  - `chore:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, `style:` → no release
+- **In `changelog-sections`, a visible type is also a *releasable* type.** release-please offers no way to list a commit in the changelog without letting it bump the version, so `hidden: true` is what enforces the "no release" line above — that is why `docs:` and `refactor:` are hidden, not because they don't matter. Un-hiding a type to get it into the changelog also signs it up to cut releases: the first attempt at this config left `docs:` visible and release-please immediately proposed a v0.1.2 built entirely from README and CLAUDE.md commits. Only `feat:`, `fix:`, `perf:` and `revert:` reach the changelog.
 - **`release-type` is `simple`, not `node`.** `package.json` is `private` and holds dev-only deps (commitlint, lefthook), so the plugin's version lives in `version.txt` instead.
 - `.release-please-manifest.json` is the source of truth for the current version. It was seeded at `0.1.1` when the automation was added, so the manually-cut v0.1.0 and v0.1.1 aren't recomputed.
-- **`CHANGELOG.md`** is maintained by release-please going forward. The v0.1.0 and v0.1.1 entries predate it and were backfilled once with `git-cliff`; git-cliff is not a project dependency.
+- **`CHANGELOG.md`** is maintained by release-please going forward. The v0.1.0 and v0.1.1 entries predate it and were backfilled once with `git-cliff` under the same visibility rules, so the whole file reflects one policy; git-cliff is not a project dependency.
+- **Actions must be allowed to open PRs** for any of this to work: Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests". Without it release-please does all its work and then fails on the final API call with `GitHub Actions is not permitted to create or approve pull requests`. `default_workflow_permissions` stays `read`, since the workflow declares what it needs explicitly.
 - Known limitation: release-please runs as `GITHUB_TOKEN`, and a PR opened by that token does not trigger `ci.yml`. So the release PR itself is unchecked. Swap in a PAT via the action's `token:` input if that ever matters.
 - Users install by cloning into `$ZSH_CUSTOM/plugins/zsh-claude-code` and adding `zsh-claude-code` to `plugins=(...)`. No package-manager integration for v0.1.
 - Later: submit to `zinit`, `antidote`, Homebrew if there's demand.
