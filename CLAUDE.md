@@ -38,10 +38,17 @@ We chose a dedicated keybind over an Enter override because it is opt-in per key
 zsh-claude-code/
 ├── CLAUDE.md                       # this file — context for Claude Code sessions
 ├── README.md                       # user-facing install & usage docs
+├── CHANGELOG.md                    # maintained by release-please
 ├── LICENSE                         # MIT
+├── version.txt                     # plugin version; bumped by release-please
 ├── mise.toml                       # pinned dev tools (bats, lefthook, commitlint)
 ├── lefthook.yml                    # commit-msg hook → commitlint
 ├── commitlint.config.js            # Conventional Commits rules
+├── release-please-config.json      # release automation config
+├── .release-please-manifest.json   # current version, per release-please
+├── .github/workflows/
+│   ├── ci.yml                      # lint + bats on ubuntu & macos, per push/PR
+│   └── release-please.yml          # opens/maintains the release PR
 ├── zsh-claude-code.plugin.zsh      # oh-my-zsh entrypoint: guard + sources lib/*
 ├── lib/
 │   ├── common.zsh                  # env-var defaults + `_zsh_claude_code_run` helper
@@ -99,17 +106,22 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
   - All features with `claude` logged out → helpful error, not a crash
   - Custom keybinds via `ZSH_CLAUDE_SUGGEST_KEY` / `ZSH_CLAUDE_EXPLAIN_KEY` set *before* plugin load
 - **Why no Bashly?** Bashly generates bash CLIs. The core value here is a zsh ZLE widget, which is zsh-only. A single sourceable `.plugin.zsh` is what oh-my-zsh expects; Bashly would add build-step overhead for no gain.
-- **CI.** Not set up yet — there is no `.github/workflows/`, so nothing runs automatically on a PR. Until it exists, a reviewer has to run `mise run check` locally against the contributor's branch. Actions is free with unlimited minutes on public repos, so this is a gap to close, not a cost constraint. The local `lefthook` hooks (`pre-commit`: `zsh -n` + bats, `pre-push`: `mise run check`) are the only automated gate today, and they only protect contributors who ran `mise run setup`.
+- **CI** (`.github/workflows/ci.yml`). Runs `mise run lint`, `mise run test`, and `mise run smoke` on every push to `main` and every PR, across `ubuntu-latest` and `macos-latest`. Both platforms are deliberate: the plugin is parsed by whatever zsh the user has, and the two runners give us two builds of 5.9. Ubuntu needs `zsh` apt-installed; macOS ships it as the default shell. Tools come from `mise.toml`, so CI and a contributor's `mise run check` use the same pinned bats. The smoke step has no `claude` credentials, so it is expected to print `smoke: skip` and pass — it runs anyway so the script can't rot unnoticed. Actions is free with unlimited minutes on public repos.
+- **Local hooks** are the first gate, before CI: `lefthook` runs `zsh -n` + bats on `pre-commit` and the full `mise run check` on `pre-push`. They only protect contributors who ran `mise run setup`, which is why CI exists.
 
 ## Release / versioning
 
 - **Strict [SemVer 2.0](https://semver.org/).** Start at `0.1.0`.
-- Releases are cut **manually** today (`git tag` + `gh release create`); there is no `release-please` config or workflow yet. Automating it is planned. The bump is read off the commit history per Conventional Commits:
+- Automated by **release-please** (`.github/workflows/release-please.yml`). Every push to `main` updates an open release PR carrying the computed bump, the `version.txt` change, and the `CHANGELOG.md` entry. Merging that PR is what cuts the tag and the GitHub release — so a release is one click, and `main` is always releasable without being released.
+- The bump comes from the commit history per Conventional Commits:
   - `feat:` → MINOR bump
   - `fix:` → PATCH bump
-  - `feat!:` / `BREAKING CHANGE:` footer → MAJOR bump
-  - `chore:`, `docs:`, `test:`, `refactor:` → no release
-- No `CHANGELOG.md` yet — the GitHub release notes serve that role. Adopting `release-please` would introduce one.
+  - `feat!:` / `BREAKING CHANGE:` footer → MAJOR bump (not MINOR — `bump-minor-pre-major` is left off, so a breaking change at 0.x goes to 1.0.0, per the strict-SemVer line above)
+  - `chore:`, `docs:`, `test:`, `refactor:` → no release, but `docs:` and `refactor:` still show up in the changelog (see `changelog-sections`); `chore:`, `ci:`, `test:`, `build:`, `style:` are hidden
+- **`release-type` is `simple`, not `node`.** `package.json` is `private` and holds dev-only deps (commitlint, lefthook), so the plugin's version lives in `version.txt` instead.
+- `.release-please-manifest.json` is the source of truth for the current version. It was seeded at `0.1.1` when the automation was added, so the manually-cut v0.1.0 and v0.1.1 aren't recomputed.
+- **`CHANGELOG.md`** is maintained by release-please going forward. The v0.1.0 and v0.1.1 entries predate it and were backfilled once with `git-cliff`; git-cliff is not a project dependency.
+- Known limitation: release-please runs as `GITHUB_TOKEN`, and a PR opened by that token does not trigger `ci.yml`. So the release PR itself is unchecked. Swap in a PAT via the action's `token:` input if that ever matters.
 - Users install by cloning into `$ZSH_CUSTOM/plugins/zsh-claude-code` and adding `zsh-claude-code` to `plugins=(...)`. No package-manager integration for v0.1.
 - Later: submit to `zinit`, `antidote`, Homebrew if there's demand.
 
