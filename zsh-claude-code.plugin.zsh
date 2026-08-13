@@ -1,5 +1,5 @@
 # zsh-claude-code — Claude-powered helpers for zsh.
-# https://github.com/matheuspoli/zsh-claude-code
+# https://github.com/matheus-poli/zsh-claude-code
 
 if ! command -v claude >/dev/null 2>&1; then
   _zsh_claude_code_missing() {
