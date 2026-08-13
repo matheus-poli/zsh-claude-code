@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to the same branch supersedes the previous run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Report both platforms even if one fails — zsh versions differ and a
+      # failure on one is useful information about the other.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # macOS ships zsh as the default shell; the Ubuntu runner image does not
+      # guarantee it.
+      - name: Install zsh (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zsh
+
+      # Installs the versions pinned in mise.toml, so CI and `mise run check`
+      # on a contributor's machine run the same bats.
+      - name: Install pinned dev tools
+        uses: jdx/mise-action@v2
+
+      - name: Report versions
+        run: |
+          zsh --version
+          mise exec -- bats --version
+
+      - name: Lint (zsh -n)
+        run: mise run lint
+
+      - name: Unit tests (bats)
+        run: mise run test
+
+      # No `claude` CLI and no credentials here, so this is expected to print
+      # "smoke: skip" and exit 0. It runs anyway to catch the smoke script
+      # itself breaking.
+      - name: Smoke (skips without claude credentials)
+        run: mise run smoke
