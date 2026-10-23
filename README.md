@@ -199,6 +199,13 @@ To add yourself after a merged PR, comment on the PR:
 @all-contributors please add @your-username for code, doc
 ```
 
+## Other shells
+
+| Shell | Project |
+|---|---|
+| zsh | [matheus-poli/zsh-claude-code](https://github.com/matheus-poli/zsh-claude-code) (this project) |
+| fish | [the-jay-schwartz/claude-code.fish](https://github.com/the-jay-schwartz/claude-code.fish) |
+
 ## License
 
 [MIT](./LICENSE) © Matheus Poli
