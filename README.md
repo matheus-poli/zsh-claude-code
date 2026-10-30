@@ -173,6 +173,7 @@ See [CLAUDE.md](./CLAUDE.md) for design notes and the full rationale behind each
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/matheus-poli"><img src="https://avatars.githubusercontent.com/u/25781749?v=4?s=100" width="100px;" alt="Matheus Poli"/><br /><sub><b>Matheus Poli</b></sub></a><br /><a href="https://github.com/matheus-poli/zsh-claude-code/commits?author=matheus-poli" title="Code">💻</a> <a href="https://github.com/matheus-poli/zsh-claude-code/commits?author=matheus-poli" title="Documentation">📖</a> <a href="#maintenance-matheus-poli" title="Maintenance">🚧</a> <a href="#design-matheus-poli" title="Design">🎨</a> <a href="#ideas-matheus-poli" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/YukiNishigaya"><img src="https://avatars.githubusercontent.com/u/235177430?v=4?s=100" width="100px;" alt="Yuki Nishigaya"/><br /><sub><b>Yuki Nishigaya</b></sub></a><br /><a href="https://github.com/matheus-poli/zsh-claude-code/commits?author=YukiNishigaya" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/the-jay-schwartz"><img src="https://avatars.githubusercontent.com/u/26683765?v=4?s=100" width="100px;" alt="Jay Schwartz"/><br /><sub><b>Jay Schwartz</b></sub></a><br /><a href="https://github.com/matheus-poli/zsh-claude-code/commits?author=the-jay-schwartz" title="Documentation">📖</a></td>
     </tr>
   </tbody>
   <tfoot>
