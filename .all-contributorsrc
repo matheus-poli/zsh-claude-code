@@ -33,6 +33,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "the-jay-schwartz",
+      "name": "Jay Schwartz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26683765?v=4",
+      "profile": "https://github.com/the-jay-schwartz",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsSortAlphabetically": false,
