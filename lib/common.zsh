@@ -54,6 +54,49 @@ _zsh_claude_code_report_error() {
   fi
 }
 
+# Prints "in" or "out" from `claude auth status`, or nothing if it can't
+# tell. Reads the JSON rather than the exit code: the command exits 1 when
+# logged out.
+_zsh_claude_code_auth_state() {
+  emulate -L zsh
+  setopt localoptions extendedglob
+  local status_json
+  status_json=$(claude auth status 2>/dev/null </dev/null)
+  if [[ "$status_json" == *'"loggedIn":'[[:space:]]#'false'* ]]; then
+    print -r -- out
+  elif [[ "$status_json" == *'"loggedIn":'[[:space:]]#'true'* ]]; then
+    print -r -- in
+  fi
+}
+
+# After a failed ask/explain: if the user is logged out and at a terminal,
+# offer to run `claude auth login`. Returns 0 when the login succeeded, so
+# the caller can retry; otherwise reports the failure and returns 1. The
+# login hint is skipped when the user is known to be logged in, since the
+# failure is then something else (claude's own message has already shown).
+# Usage: _zsh_claude_code_offer_login <exit_code> [feature_name]
+_zsh_claude_code_offer_login() {
+  emulate -L zsh
+  local rc=$1 feature=${2:-claude}
+  local state=$(_zsh_claude_code_auth_state)
+  if [[ $state == out && -t 0 && -t 2 ]]; then
+    print -rn -u2 -- "zsh-claude-code: you're not logged in to Claude. Run \`claude auth login\` now? [y/N] "
+    if read -q; then
+      print -u2
+      claude auth login && return 0
+      print -r -- "zsh-claude-code: \`claude auth login\` failed." >&2
+      return 1
+    fi
+    print -u2
+  fi
+  if [[ $state == in ]]; then
+    print -r -- "zsh-claude-code: $feature failed (exit $rc)." >&2
+  else
+    _zsh_claude_code_command_hint $rc $feature
+  fi
+  return 1
+}
+
 # Friendly error reporter for non-widget commands (ask / explain). Prints
 # a single hint line to stderr after claude's own error has already shown.
 _zsh_claude_code_command_hint() {

@@ -187,6 +187,87 @@ SH
   [[ "$output" == *"claude auth login"* ]]
 }
 
+# Fake claude for the login flow: `auth status` reports logged out (and, like
+# the real CLI, exits 1) until `auth login` creates $STUB_DIR/logged-in;
+# -p calls fail the same way.
+stub_claude_auth() {
+  cat > "$STUB_DIR/claude" <<SH
+#!/bin/sh
+state='$STUB_DIR/logged-in'
+case "\$1 \$2" in
+  "auth status")
+    if [ -f "\$state" ]; then echo '{ "loggedIn": true }'; exit 0; fi
+    echo '{ "loggedIn": false }'; exit 1 ;;
+  "auth login")
+    touch "\$state"; echo "Login successful."; exit 0 ;;
+esac
+if [ -f "\$state" ]; then echo "answer"; exit 0; fi
+echo "Not logged in · Please run /login"
+exit 1
+SH
+  chmod +x "$STUB_DIR/claude"
+}
+
+@test "auth_state: reads claude auth status, not its exit code" {
+  stub_claude_auth
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_auth_state
+    touch '$STUB_DIR/logged-in'
+    _zsh_claude_code_auth_state
+    rm -f '$STUB_DIR/claude'
+    print -r -- \"[\$(_zsh_claude_code_auth_state)]\"
+  "
+  [[ "$output" == $'out\nin\n[]' ]]
+}
+
+@test "ask: logged in but failing, no login hint" {
+  cat > "$STUB_DIR/claude" <<'SH'
+#!/bin/sh
+if [ "$1 $2" = "auth status" ]; then echo '{ "loggedIn": true }'; exit 0; fi
+echo "There's an issue with the selected model" ; exit 1
+SH
+  chmod +x "$STUB_DIR/claude"
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_ask hello </dev/null 2>&1
+  "
+  [[ "$output" == *"ask failed (exit 1)."* ]]
+  [[ "$output" != *"claude auth login"* ]]
+}
+
+@test "ask: without a terminal, prints the hint and does not prompt" {
+  stub_claude_auth
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_ask hello </dev/null 2>&1
+    print -r -- \"rc=\$?\"
+  "
+  [[ "$output" == *"claude auth login"* ]]
+  [[ "$output" != *"[y/N]"* ]]
+  [[ "$output" == *"rc=1"* ]]
+  [ ! -f "$STUB_DIR/logged-in" ]
+}
+
+@test "ask: at a terminal, offers login, runs it on y, and retries" {
+  command -v script >/dev/null || skip "script(1) not available"
+  stub_claude_auth
+  local cmd="export PATH='$STUB_PATH'; source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'; _zsh_claude_code_ask hello; print -r -- rc=\$?"
+  # script(1) gives the command a pty; its flags differ between util-linux and BSD.
+  if script --version >/dev/null 2>&1; then
+    run sh -c "printf y | script -qec \"zsh -c \\\"$cmd\\\"\" /dev/null"
+  else
+    run sh -c "printf y | script -q /dev/null zsh -c \"$cmd\""
+  fi
+  [[ "$output" == *"[y/N]"* ]]
+  [[ "$output" == *"Login successful."* ]]
+  [[ "$output" == *"answer"* ]]
+  [[ "$output" == *"rc=0"* ]]
+}
+
 @test "ask: joins multiple words into one prompt arg" {
   stub_claude
   # Call the underlying function directly — the `noglob` alias only expands

@@ -95,6 +95,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
 - **Why a helper function behind each alias?** `claude -p` only reads its first positional arg as the prompt, so we need to `"$*"`-join all the words into one prompt. Aliases can't do that alone.
 - **Widget defensive output scrubbing.** Even with a strict system prompt, models occasionally wrap output in code fences or add stray newlines. The suggest widget strips ``` fences, backticks, and leading/trailing whitespace before dropping the result into `BUFFER`.
 - **Suggest widget restores the original `BUFFER` on error**, so a failed call doesn't leave the user with an empty prompt.
+- **Assisted login in `ask`/`explain` only.** On failure they check `claude auth status` and, if the user is logged out and stdin/stderr are a terminal, offer `[y/N]` to run `claude auth login`, then retry the question once. The status JSON is the signal, not the exit code (the command exits 1 when logged out), and it keeps `ANTHROPIC_API_KEY` users and unrelated failures from being prompted; when it says logged in, the login hint is dropped too. The check costs one extra CLI start, only on the failure path. Widgets just print the hint: an interactive login that opens a browser and waits doesn't belong inside ZLE. Note `claude -p` prints "Not logged in" on stdout, not stderr, so widgets fall back to stdout for the error text. The login command is `claude auth login`; there is no `claude login`.
 - **Guard for missing `claude` lives in the entrypoint**, not `common.zsh`, so we install stubs for `ask`/`explain` and skip widget bindings entirely if `claude` isn't installed.
 
 ## Testing approach
@@ -106,7 +107,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
   - Ctrl+X with a clear command request ("find files larger than 10mb")
   - Ctrl+X with an ambiguous request (should still produce one command)
   - Alt+E on a typed command — explanation prints above, original command is preserved
-  - All features with `claude` logged out → helpful error, not a crash
+  - All features with `claude` logged out → helpful error, not a crash; `ask`/`explain` offer `claude auth login` and retry (simulate with `CLAUDE_CONFIG_DIR=$(mktemp -d)`)
   - Custom keybinds via `ZSH_CLAUDE_SUGGEST_KEY` / `ZSH_CLAUDE_EXPLAIN_KEY` set *before* plugin load
 - **Why no Bashly?** Bashly generates bash CLIs. The core value here is a zsh ZLE widget, which is zsh-only. A single sourceable `.plugin.zsh` is what oh-my-zsh expects; Bashly would add build-step overhead for no gain.
 - **CI** (`.github/workflows/ci.yml`). Runs `mise run lint`, `mise run test`, and `mise run smoke` on every push to `main` and every PR, across `ubuntu-latest` and `macos-latest`. Both platforms are deliberate: the plugin is parsed by whatever zsh the user has, and the two runners give us two builds of 5.9. Ubuntu needs `zsh` apt-installed; macOS ships it as the default shell. Tools come from `mise.toml`, so CI and a contributor's `mise run check` use the same pinned bats. The smoke step has no `claude` credentials, so it is expected to print `smoke: skip` and pass — it runs anyway so the script can't rot unnoticed. Actions is free with unlimited minutes on public repos.
