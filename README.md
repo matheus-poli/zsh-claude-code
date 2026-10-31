@@ -132,7 +132,7 @@ export ZSH_CLAUDE_EXTRA_FLAGS="--mcp-config $HOME/.config/zsh-claude-code/mcp.js
 ## Troubleshooting
 
 - **"command not found: claude"** - the plugin no-ops gracefully when `claude` isn't on `$PATH`. Install Claude Code and run `claude auth login`.
-- **Not logged in** - `ask` and `explain` notice it and offer to run `claude auth login` for you, then retry your question. The widgets can't run an interactive login from inside the line editor, so they print the command to run instead.
+- **Not logged in** - every feature notices it and asks `Run claude auth login now? [y/N]`. Answer `y` to log in (Ctrl+C cancels it); your question, or the line you pressed the key on, is then retried automatically. Answer `n`, or use `ask`/`explain` in a pipe or script, and you get the command to run instead, with your line left as it was.
 - **Widget doesn't fire** - another plugin may have rebound `^X`. Try setting `ZSH_CLAUDE_SUGGEST_KEY` to something else, or use `bindkey | grep claude` to confirm the binding.
 - **Output has stray backticks / code fences** - please open an issue with the input that produced it. The suggest widget already scrubs fences defensively, but prompts evolve.
 
@@ -169,7 +169,7 @@ Available tasks:
 - `ask` and `explain` with `?`, `!`, `*`, and quoted strings
 - <kbd>Ctrl</kbd>+<kbd>X</kbd> with a clear request and an ambiguous one
 - <kbd>Alt</kbd>+<kbd>E</kbd> on a typed command - original command must stay intact
-- All four features with `claude` logged out → helpful error, not a crash; `ask`/`explain` offer `claude auth login` (try it safely with `CLAUDE_CONFIG_DIR=$(mktemp -d)`)
+- All four features with `claude` logged out → `[y/N]` offer to run `claude auth login`, retry after `y`, line kept after `n` or Ctrl+C in the login (try it safely with `CLAUDE_CONFIG_DIR=$(mktemp -d)`)
 - Custom keybinds set before plugin load
 
 See [CLAUDE.md](./CLAUDE.md) for design notes and the full rationale behind each decision.
