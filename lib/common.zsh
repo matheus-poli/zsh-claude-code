@@ -29,8 +29,8 @@ _zsh_claude_code_run() {
 }
 
 # Friendly error reporter for widgets. Detects common auth failures and
-# appends a one-line hint pointing the user at `claude login`.
-# Usage: _zsh_claude_code_report_error <stderr_text> <exit_code> [feature_name]
+# appends a one-line hint pointing the user at `claude auth login`.
+# Usage: _zsh_claude_code_report_error <error_text> <exit_code> [feature_name]
 _zsh_claude_code_report_error() {
   emulate -L zsh
   local msg=$1 rc=$2 feature=${3:-claude}
@@ -50,7 +50,7 @@ _zsh_claude_code_report_error() {
      || "$lmsg" == *forbidden* \
      || "$lmsg" == *credential* \
      || "$lmsg" == *token* ]]; then
-    print -r -- "  hint: not logged in? run \`claude login\` (or set ANTHROPIC_API_KEY)"
+    print -r -- "  hint: not logged in? run \`claude auth login\` (or set ANTHROPIC_API_KEY)"
   fi
 }
 
@@ -59,5 +59,5 @@ _zsh_claude_code_report_error() {
 _zsh_claude_code_command_hint() {
   emulate -L zsh
   local rc=$1 feature=${2:-claude}
-  print -r -- "zsh-claude-code: $feature failed (exit $rc). Not logged in? Run \`claude login\` (or set ANTHROPIC_API_KEY)." >&2
+  print -r -- "zsh-claude-code: $feature failed (exit $rc). Not logged in? Run \`claude auth login\` (or set ANTHROPIC_API_KEY)." >&2
 }

@@ -2,7 +2,7 @@
 
 Claude-powered helpers for your zsh prompt. Ask questions, explain commands, and turn natural language into shell commands - without leaving the terminal.
 
-All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overview) (Claude Code) in `--print` mode, so if you're already logged in with `claude login` there's nothing else to set up.
+All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overview) (Claude Code) in `--print` mode, so if you're already logged in with `claude auth login` there's nothing else to set up.
 
 - **<kbd>Ctrl</kbd>+<kbd>X</kbd>** - describe a command in plain English, press to rewrite the line into shell.
 - **<kbd>Alt</kbd>+<kbd>E</kbd>** - type or paste a command, press to print an explanation above it.
@@ -21,7 +21,7 @@ All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overvi
 ## Requirements
 
 - `zsh` 5.0+
-- [`claude` CLI](https://code.claude.com/docs/en/overview) installed and authenticated (either `claude login` or `ANTHROPIC_API_KEY` in the environment)
+- [`claude` CLI](https://code.claude.com/docs/en/overview) installed and authenticated (either `claude auth login` or `ANTHROPIC_API_KEY` in the environment)
 - No other runtime dependencies
 
 ## Installation
@@ -131,7 +131,7 @@ export ZSH_CLAUDE_EXTRA_FLAGS="--mcp-config $HOME/.config/zsh-claude-code/mcp.js
 
 ## Troubleshooting
 
-- **"command not found: claude"** - the plugin no-ops gracefully when `claude` isn't on `$PATH`. Install Claude Code and run `claude login`.
+- **"command not found: claude"** - the plugin no-ops gracefully when `claude` isn't on `$PATH`. Install Claude Code and run `claude auth login`.
 - **Widget doesn't fire** - another plugin may have rebound `^X`. Try setting `ZSH_CLAUDE_SUGGEST_KEY` to something else, or use `bindkey | grep claude` to confirm the binding.
 - **Output has stray backticks / code fences** - please open an issue with the input that produced it. The suggest widget already scrubs fences defensively, but prompts evolve.
 
