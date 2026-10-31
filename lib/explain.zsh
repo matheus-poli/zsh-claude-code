@@ -10,7 +10,11 @@ _zsh_claude_code_explain() {
   fi
   _zsh_claude_code_run "$ZSH_CLAUDE_EXPLAIN_MODEL" "$ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT" "$*"
   local rc=$?
-  (( rc != 0 )) && _zsh_claude_code_command_hint $rc explain
+  # Logged out at a terminal: offer `claude auth login`, then retry once.
+  if (( rc != 0 )) && _zsh_claude_code_offer_login $rc explain; then
+    _zsh_claude_code_run "$ZSH_CLAUDE_EXPLAIN_MODEL" "$ZSH_CLAUDE_EXPLAIN_SYSTEM_PROMPT" "$*"
+    rc=$?
+  fi
   return $rc
 }
 alias explain='noglob _zsh_claude_code_explain'

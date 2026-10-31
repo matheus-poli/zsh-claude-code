@@ -10,7 +10,11 @@ _zsh_claude_code_ask() {
   fi
   _zsh_claude_code_run "$ZSH_CLAUDE_ASK_MODEL" "$ZSH_CLAUDE_ASK_SYSTEM_PROMPT" "$*"
   local rc=$?
-  (( rc != 0 )) && _zsh_claude_code_command_hint $rc ask
+  # Logged out at a terminal: offer `claude auth login`, then retry once.
+  if (( rc != 0 )) && _zsh_claude_code_offer_login $rc ask; then
+    _zsh_claude_code_run "$ZSH_CLAUDE_ASK_MODEL" "$ZSH_CLAUDE_ASK_SYSTEM_PROMPT" "$*"
+    rc=$?
+  fi
   return $rc
 }
 # noglob so `?`, `*`, `[...]` in questions don't get expanded by zsh.
