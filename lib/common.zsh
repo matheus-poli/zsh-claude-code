@@ -10,6 +10,8 @@
 
 # Invoke `claude -p` with shared tuned flags.
 # Full system-prompt replace (not append) keeps responses terse and tool-free.
+# --strict-mcp-config skips the user's MCP servers: `--tools ""` doesn't drop
+# their tool definitions, which can add 200k+ input tokens to every call.
 _zsh_claude_code_run() {
   emulate -L zsh
   local model=$1 sys=$2 prompt=$3
@@ -19,6 +21,7 @@ _zsh_claude_code_run() {
     --no-session-persistence \
     --disable-slash-commands \
     --tools "" \
+    --strict-mcp-config \
     --model "$model" \
     --system-prompt "$sys" \
     "${extra[@]}" \

@@ -189,3 +189,19 @@ SH
   [ "$status" -eq 0 ]
   [[ "$output" == "what is two plus two" ]]
 }
+
+@test "run: skips the user's MCP servers" {
+  # Stub that prints every arg on its own line, so we can assert on flags.
+  cat > "$STUB_DIR/claude" <<'SH'
+#!/bin/sh
+printf '%s\n' "$@"
+SH
+  chmod +x "$STUB_DIR/claude"
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_run sonnet 'sys' 'prompt'
+  "
+  [ "$status" -eq 0 ]
+  [[ "$output" == *$'\n--strict-mcp-config\n'* ]]
+}
