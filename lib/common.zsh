@@ -97,7 +97,14 @@ _zsh_claude_code_login_now() {
   # the widget mid-way and dropping the user's line. The widgets turn
   # monitor off for their spinner job; options are local here.
   setopt monitor
-  claude auth login
+  # Inside a widget, stdin is not the terminal, so the login couldn't read
+  # the pasted code (Enter just moved down a line): give it /dev/tty. And zle
+  # leaves bracketed paste on, which would wrap the code in ESC[200~ ESC[201~;
+  # turn it off for the login with zle's own sequences, then back on.
+  local -a paste=("${zle_bracketed_paste[@]}")
+  [[ -n $WIDGET && -n ${paste[2]} ]] && print -rn -- "${paste[2]}" >/dev/tty
+  claude auth login </dev/tty
+  [[ -n $WIDGET && -n ${paste[1]} ]] && print -rn -- "${paste[1]}" >/dev/tty
   [[ $(_zsh_claude_code_auth_state) == in ]] && return 0
   # Leading newline: a cancelled login leaves the cursor after its "^C".
   print -r -- $'\nzsh-claude-code: still not logged in.' >&2
