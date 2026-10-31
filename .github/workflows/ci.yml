@@ -56,3 +56,38 @@ jobs:
       # itself breaking.
       - name: Smoke (skips without claude credentials)
         run: mise run smoke
+
+  # release-please reads the version bump from what lands on main, and which
+  # text lands depends on the merge button: rebase and merge-commit keep each
+  # commit's message, squash uses the PR title. Lint both, since the lefthook
+  # commit-msg hook only covers contributors who ran `mise run setup`.
+  commits:
+    name: conventional commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history, so the PR's base..head range is available.
+          fetch-depth: 0
+
+      - name: Install pinned dev tools
+        uses: jdx/mise-action@v2
+
+      # --ignore-scripts skips lefthook's postinstall hook setup, not needed here.
+      - name: Install commitlint
+        run: mise exec -- npm ci --ignore-scripts
+
+      - name: Lint PR commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: mise exec -- npx --no -- commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+
+      # Passed through env, never interpolated into the script, so a crafted
+      # title can't inject shell.
+      - name: Lint PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | mise exec -- npx --no -- commitlint --verbose
