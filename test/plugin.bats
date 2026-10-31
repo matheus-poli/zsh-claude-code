@@ -238,7 +238,7 @@ SH
   [[ "$output" != *"claude auth login"* ]]
 }
 
-@test "ask: without a terminal, prints the hint and does not prompt" {
+@test "ask: without a terminal, prints our login message and does not prompt" {
   stub_claude_auth
   run zsh -c "
     export PATH='$STUB_PATH'
@@ -246,7 +246,9 @@ SH
     _zsh_claude_code_ask hello </dev/null 2>&1
     print -r -- \"rc=\$?\"
   "
-  [[ "$output" == *"claude auth login"* ]]
+  [[ "$output" == *"not logged in to Claude. Run \`claude auth login\`"* ]]
+  # claude's own "Please run /login" only works inside a claude session.
+  [[ "$output" != *"/login"* ]]
   [[ "$output" != *"[y/N]"* ]]
   [[ "$output" == *"rc=1"* ]]
   [ ! -f "$STUB_DIR/logged-in" ]
@@ -255,17 +257,125 @@ SH
 @test "ask: at a terminal, offers login, runs it on y, and retries" {
   command -v script >/dev/null || skip "script(1) not available"
   stub_claude_auth
-  local cmd="export PATH='$STUB_PATH'; source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'; _zsh_claude_code_ask hello; print -r -- rc=\$?"
-  # script(1) gives the command a pty; its flags differ between util-linux and BSD.
-  if script --version >/dev/null 2>&1; then
-    run sh -c "printf y | script -qec \"zsh -c \\\"$cmd\\\"\" /dev/null"
-  else
-    run sh -c "printf y | script -q /dev/null zsh -c \"$cmd\""
-  fi
+  run_in_pty y <<ZSH
+export PATH='$STUB_PATH'
+source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+_zsh_claude_code_ask hello
+print -r -- "rc=\$?"
+ZSH
   [[ "$output" == *"[y/N]"* ]]
   [[ "$output" == *"Login successful."* ]]
   [[ "$output" == *"answer"* ]]
   [[ "$output" == *"rc=0"* ]]
+}
+
+# Runs the zsh script on stdin under a pty via script(1), typing $1 into it.
+# The script goes through a file: nested quoting would let sh expand $? etc.
+# script(1) flags differ between util-linux and BSD.
+run_in_pty() {
+  local keys=$1
+  cat > "$STUB_DIR/pty.zsh"
+  if script --version >/dev/null 2>&1; then
+    run sh -c "printf '$keys' | script -qec 'zsh $STUB_DIR/pty.zsh' /dev/null"
+  else
+    run sh -c "printf '$keys' | script -q /dev/null zsh '$STUB_DIR/pty.zsh'"
+  fi
+}
+
+@test "ask: a cancelled login (exit 0, still logged out) is not retried" {
+  command -v script >/dev/null || skip "script(1) not available"
+  stub_claude_auth
+  # Like Ctrl+C in the real login: exit 0 without logging in.
+  sed -i.bak 's/touch "\$state"; echo "Login successful."; exit 0/exit 0/' "$STUB_DIR/claude"
+  run_in_pty y <<ZSH
+export PATH='$STUB_PATH'
+source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+_zsh_claude_code_ask hello
+print -r -- "rc=\$?"
+ZSH
+  [[ "$output" == *"[y/N]"* ]]
+  [[ "$output" == *"still not logged in"* ]]
+  [[ "$output" != *"answer"* ]]
+  [[ "$output" == *"rc=1"* ]]
+}
+
+# Drives an interactive zsh through zpty: types "request", presses the
+# widget's key $1, answers $2 to the login prompt, optionally waits for text
+# $3 and types $4, then reports the line the widget left by wrapping it in a
+# print (Ctrl+A, Ctrl+E). Prints everything the terminal showed. The key is
+# pressed directly: calling the widget from a wrapper widget hides how
+# Ctrl+C reaches it.
+widget_in_pty() {
+  local key=$1 answer=$2 then_wait=$3 then_keys=$4
+  cat > "$STUB_DIR/widget.zsh" <<ZSH
+zmodload zsh/zpty
+zpty -b z "env PATH='$STUB_PATH' TERM=xterm-256color zsh -f -i"
+zpty -w z "stty cols 80 rows 24; PROMPT='> '; source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'"
+sleep 1
+zpty -w -n z 'request'
+zpty -w -n z \$'$key'
+# Reads until \$1 shows up (or ~15s): zpty -r -t gives up as soon as
+# nothing is pending, which happens between the widget's steps.
+local out chunk
+wait_for() {
+  integer i
+  for (( i = 0; i < 150; i++ )); do
+    while zpty -r -t z chunk; do out+=\$chunk; done
+    [[ \$out == *"\$1"* ]] && return
+    sleep 0.1
+  done
+}
+# Answer only once the question is up, as a user would: keys typed earlier
+# sit in the tty's line buffer after zle -I and never reach the read.
+wait_for '[y/N]'
+zpty -w -n z '$answer'
+if [[ -n '$then_wait' ]]; then
+  wait_for '$then_wait'
+  zpty -w -n z \$'$then_keys'
+fi
+# Back at the prompt: wrap the line in a print. The split "BUFFER""<" keeps
+# the echo of the typed line from matching before the print runs.
+wait_for '> '
+sleep 2
+zpty -w -n z \$'\\x01'
+zpty -w -n z 'print -r -- "BUFFER""<'
+zpty -w -n z \$'\\x05'
+zpty -w z '>"'
+wait_for 'BUFFER<'
+print -r -- "\$out"
+zpty -d z
+ZSH
+  run zsh -f "$STUB_DIR/widget.zsh"
+}
+
+@test "suggest widget: logged out, offers login, runs it on y, and retries" {
+  stub_claude_auth
+  widget_in_pty '\x18' y
+  [[ "$output" == *"[y/N]"* ]]
+  [[ "$output" == *"Login successful."* ]]
+  [[ "$output" == *"BUFFER<answer>"* ]]
+  [[ "$output" != *"/login"* ]]
+}
+
+@test "suggest widget: logged out, n keeps the request and shows our message" {
+  stub_claude_auth
+  widget_in_pty '\x18' n
+  [[ "$output" == *"[y/N]"* ]]
+  [[ "$output" == *"not logged in to Claude. Run \`claude auth login\`"* ]]
+  [[ "$output" == *"BUFFER<request>"* ]]
+  [[ "$output" != *"/login"* ]]
+  [ ! -f "$STUB_DIR/logged-in" ]
+}
+
+@test "suggest widget: Ctrl+C in the login keeps the widget and the request" {
+  stub_claude_auth
+  # The terminal's Ctrl+C signals its foreground process group. Unless the
+  # login runs as its own job, that group is the shell's, and the widget dies.
+  # Like the real login, the stub catches Ctrl+C and exits 0.
+  sed -i.bak 's/touch "\$state"; echo "Login successful."; exit 0/trap "exit 0" INT; echo "Paste code here"; sleep 10 \& wait; exit 0/' "$STUB_DIR/claude"
+  widget_in_pty '\x18' y 'Paste code here' '\x03'
+  [[ "$output" == *"still not logged in"* ]]
+  [[ "$output" == *"BUFFER<request>"* ]]
 }
 
 @test "ask: joins multiple words into one prompt arg" {

@@ -35,7 +35,8 @@ claude-explain-widget() {
 
   if (( rc != 0 )) || [[ -z "$result" ]]; then
     # claude -p prints some errors, "Not logged in" among them, on stdout.
-    _zsh_claude_code_report_error "${stderr_msg:-$result}" "$rc" "explain"
+    _zsh_claude_code_widget_failed "${stderr_msg:-$result}" "$rc" explain claude-explain-widget
+    rc=$?
     return $rc
   fi
 

@@ -39,7 +39,8 @@ claude-suggest() {
   if (( rc != 0 )) || [[ -z "$result" ]]; then
     zle -I
     # claude -p prints some errors, "Not logged in" among them, on stdout.
-    _zsh_claude_code_report_error "${stderr_msg:-$result}" "$rc" "suggest"
+    _zsh_claude_code_widget_failed "${stderr_msg:-$result}" "$rc" suggest claude-suggest
+    rc=$?
     # No `zle reset-prompt` after `zle -I`: zle already redraws below the
     # output, and a reset-prompt redraws as many lines up as the prompt has,
     # over the last lines printed.
