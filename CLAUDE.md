@@ -10,7 +10,7 @@ A zsh plugin that adds Claude-powered helpers to the terminal:
 All four use the `claude` CLI (Claude Code) in `--print` mode under the hood. The plugin is a thin, zero-runtime-dependency wrapper that:
 
 1. Passes tuned `--system-prompt` text so Claude behaves like a terminal assistant.
-2. Tunes flags for speed (`--no-session-persistence`, `--disable-slash-commands`, `--tools ""`).
+2. Tunes flags for speed and token use (`--no-session-persistence`, `--disable-slash-commands`, `--tools ""`, `--strict-mcp-config`).
 3. Uses a cheaper/faster model (Haiku) for the inline-suggest widget, a prose-friendly model (Sonnet) for `explain`, and a more capable model (Opus) for `ask`.
 
 ## Target users
@@ -84,6 +84,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
 
 - **Why `--system-prompt` (full replace) instead of `--append-system-prompt`?** Claude Code's default system prompt is large and biased toward agentic tool-use. For quick terminal Q&A we don't want that context — full replace is faster and produces tighter answers.
 - **Why `--tools ""`?** These helpers are text-in/text-out. Disabling tools prevents Claude from trying to read files or run commands, which would surprise the user and slow down responses.
+- **Why `--strict-mcp-config`?** `--tools ""` only removes the built-in tools; the definitions of every MCP server in the user's Claude Code config still went out with each call. Measured on a `say OK` with Haiku: ~216k input tokens and $0.016 per call with a typical set of MCP servers, against ~1.7k (from `$HOME`) to ~8k (from a repo with a large CLAUDE.md) with the flag. The remainder is CLAUDE.md, which stays loaded on purpose. Users who want MCP context opt in with `ZSH_CLAUDE_EXTRA_FLAGS='--mcp-config <file>'`, which `--strict-mcp-config` still honors. `--safe-mode` would cut to ~800 tokens, but it also disables settings.json customizations that may carry the user's provider/auth setup, and it's documented as a troubleshooting flag.
 - **Why not `--bare`?** `--bare` disables OAuth and the keychain, so users logged in via `claude login` would break. Stick to lighter flags that preserve auth.
 - **Model choice.** All three features default to Sonnet. We originally picked Haiku for `suggest` on a "smaller-faster" hypothesis, but live-API measurements showed the opposite — Sonnet was consistently 2-3x faster wall-clock on short tools-disabled prompts. Users can still override per-feature via `ZSH_CLAUDE_*_MODEL` to pick Opus (stronger answers) or Haiku (cheaper tokens, expect higher latency today).
 - **Why a dedicated widget keybind instead of overriding Enter or a `#` prefix?** Overriding `accept-line` means every single Enter press goes through our hook forever; a keybind is opt-in per keystroke and leaves default behavior untouched.

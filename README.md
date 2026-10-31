@@ -119,6 +119,14 @@ export ZSH_CLAUDE_SUGGEST_KEY='^G'     # Ctrl+G instead of Ctrl+X
 export ZSH_CLAUDE_ASK_MODEL='opus'     # stronger model for ask, slower
 ```
 
+### MCP servers are not loaded
+
+Calls skip the MCP servers configured in your Claude Code (`--strict-mcp-config`). The helpers run with tools disabled, so those servers can't be used anyway, and their tool definitions can add 200k+ input tokens to every call. To load specific servers on purpose, pass them explicitly:
+
+```bash
+export ZSH_CLAUDE_EXTRA_FLAGS="--mcp-config $HOME/.config/zsh-claude-code/mcp.json"
+```
+
 ## Troubleshooting
 
 - **"command not found: claude"** - the plugin no-ops gracefully when `claude` isn't on `$PATH`. Install Claude Code and run `claude login`.
