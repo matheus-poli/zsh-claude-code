@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/matheus-poli/zsh-claude-code/compare/v0.3.0...v0.3.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* let the widget login read the pasted code ([6dd0dbe](https://github.com/matheus-poli/zsh-claude-code/commit/6dd0dbe888d0a26c84ca7ec5313f7c6eaf745226))
+
 ## [0.3.0](https://github.com/matheus-poli/zsh-claude-code/compare/v0.2.0...v0.3.0) (2026-10-31)
 
 
