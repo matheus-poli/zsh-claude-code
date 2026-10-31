@@ -26,6 +26,10 @@ run = "zsh test/smoke.zsh"
 description = "zsh -n syntax check on all plugin files"
 run = "for f in zsh-claude-code.plugin.zsh lib/*.zsh scripts/*.zsh; do zsh -n \"$f\"; done"
 
+[tasks.bench]
+description = "Benchmark latency, tokens and cost per model (real API calls)"
+run = "zsh scripts/bench.zsh"
+
 [tasks.check]
 description = "Run lint + unit tests + smoke"
 run = ["mise run lint", "mise run test", "mise run smoke"]
