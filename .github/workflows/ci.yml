@@ -25,7 +25,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # macOS ships zsh as the default shell; the Ubuntu runner image does not
       # guarantee it.
@@ -38,7 +38,7 @@ jobs:
       # Installs the versions pinned in mise.toml, so CI and `mise run check`
       # on a contributor's machine run the same bats.
       - name: Install pinned dev tools
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@v5
 
       - name: Report versions
         run: |
@@ -67,13 +67,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Full history, so the PR's base..head range is available.
           fetch-depth: 0
 
       - name: Install pinned dev tools
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@v5
 
       # --ignore-scripts skips lefthook's postinstall hook setup, not needed here.
       - name: Install commitlint
