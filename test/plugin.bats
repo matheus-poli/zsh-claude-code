@@ -199,6 +199,7 @@ case "\$1 \$2" in
     if [ -f "\$state" ]; then echo '{ "loggedIn": true }'; exit 0; fi
     echo '{ "loggedIn": false }'; exit 1 ;;
   "auth login")
+    [ -t 0 ] && echo "login stdin: tty"
     touch "\$state"; echo "Login successful."; exit 0 ;;
 esac
 if [ -f "\$state" ]; then echo "answer"; exit 0; fi
@@ -359,6 +360,14 @@ ZSH
   [[ "$output" == *"Login successful."* ]]
   [[ "$output" == *"BUFFER<answer>"* ]]
   [[ "$output" != *"/login"* ]]
+  # A widget's stdin isn't the terminal; the login must get /dev/tty to read
+  # the pasted code.
+  [[ "$output" == *"login stdin: tty"* ]]
+  # Bracketed paste is switched off between the answer and the login, so a
+  # pasted code doesn't arrive wrapped in ESC[200~ ... ESC[201~.
+  local during=${output#*\[y/N\]}
+  during=${during%%Login successful.*}
+  [[ "$during" == *$'\e[?2004l'* ]]
 }
 
 @test "suggest widget: logged out, n keeps the request and shows our message" {

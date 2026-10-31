@@ -102,6 +102,8 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
   - The `[y/N]` key is read with the tty briefly in non-canonical mode (`stty -icanon min 1`, restored from `stty -g`). Inside a widget, `zle -I` leaves the tty in line mode, where `read -q`/`read -k` wait for Enter.
   - The login runs with `setopt monitor`, as its own foreground job. Otherwise Ctrl+C in it also signals the shell, which aborts the widget mid-way, drops the user's line and leaves the prompt half-drawn (Pure showed raw `prompt_pure_state[prompt]`).
   - `claude -p` prints "Not logged in" on stdout, not stderr, so widgets fall back to stdout for the error text.
+  - The login gets `</dev/tty`: a widget's stdin is not the terminal, so the login couldn't read the pasted code (Enter only echoed a newline).
+  - Inside a widget, bracketed paste is switched off around the login with zle's own `$zle_bracketed_paste` sequences: zle leaves it on, and the terminal then wraps a pasted code in `ESC[200~`/`ESC[201~`, which the login rejects.
 - **Testing widgets.** `test/plugin.bats` drives an interactive zsh through `zpty`: press the widget's real key (calling it from a wrapper widget hid the Ctrl+C bug), wait for the `[y/N]` before answering (typeahead after `zle -I` never reaches the read), then wrap the resulting line in a `print` with Ctrl+A/Ctrl+E to read it back. Stubs mimic the real CLI's quirks: `auth status` exits 1 when logged out, and the login catches SIGINT and exits 0.
 - **Guard for missing `claude` lives in the entrypoint**, not `common.zsh`, so we install stubs for `ask`/`explain` and skip widget bindings entirely if `claude` isn't installed.
 
