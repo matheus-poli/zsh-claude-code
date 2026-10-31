@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/matheus-poli/zsh-claude-code/compare/v0.1.2...v0.2.0) (2026-10-31)
+
+
+### Features
+
+* offer to run `claude auth login` from ask and explain ([42e1a9e](https://github.com/matheus-poli/zsh-claude-code/commit/42e1a9ed415d0e71fe08c0ae68880adf4bf95fb0))
+
+
+### Bug Fixes
+
+* point the login hint at `claude auth login` ([56aedc5](https://github.com/matheus-poli/zsh-claude-code/commit/56aedc5cd5830c7adb4f691da3e89b488d4cc833))
+
 ## [0.1.2](https://github.com/matheus-poli/zsh-claude-code/compare/v0.1.1...v0.1.2) (2026-10-31)
 
 
