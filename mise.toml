@@ -16,7 +16,7 @@ run = "zsh scripts/doctor.zsh"
 
 [tasks.test]
 description = "Run bats unit tests"
-run = "bats test/"
+run = "bats --print-output-on-failure test/"
 
 [tasks.smoke]
 description = "Run the end-to-end smoke test (requires authenticated claude CLI)"
