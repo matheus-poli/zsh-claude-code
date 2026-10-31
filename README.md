@@ -15,7 +15,7 @@ All four features wrap the [`claude` CLI](https://code.claude.com/docs/en/overvi
 |---|---|---|---|
 | **Ask** | Terse answer to any dev/terminal question | `ask <question>` | `sonnet` |
 | **Explain** | Summarize a command in natural, concise English | `explain <command>` | `sonnet` |
-| **Suggest widget** | Rewrite the current line (natural language) → one shell command, in place | <kbd>Ctrl</kbd>+<kbd>X</kbd> | `sonnet` |
+| **Suggest widget** | Rewrite the current line (natural language) → one shell command, in place | <kbd>Ctrl</kbd>+<kbd>X</kbd> | `haiku` |
 | **Explain widget** | Explain the command currently at the prompt, above it (command stays intact) | <kbd>Alt</kbd>+<kbd>E</kbd> | `sonnet` |
 
 ## Requirements
@@ -103,7 +103,7 @@ Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds 
 |---|---|---|
 | `ZSH_CLAUDE_ASK_MODEL` | `sonnet` | Model for `ask` |
 | `ZSH_CLAUDE_EXPLAIN_MODEL` | `sonnet` | Model for `explain` + explain widget |
-| `ZSH_CLAUDE_SUGGEST_MODEL` | `sonnet` | Model for the suggest widget |
+| `ZSH_CLAUDE_SUGGEST_MODEL` | `haiku` | Model for the suggest widget |
 | `ZSH_CLAUDE_SUGGEST_KEY` | `^X` | Keybind for the suggest widget |
 | `ZSH_CLAUDE_EXPLAIN_KEY` | `^[e` | Keybind for the explain widget (`^[e` = Alt+E) |
 | `ZSH_CLAUDE_ASK_SYSTEM_PROMPT` | *(built-in)* | Full override of the `ask` system prompt |
@@ -118,6 +118,8 @@ Set any of these in `~/.zshrc` **before** the plugin loads (especially keybinds 
 export ZSH_CLAUDE_SUGGEST_KEY='^G'     # Ctrl+G instead of Ctrl+X
 export ZSH_CLAUDE_ASK_MODEL='opus'     # stronger model for ask, slower
 ```
+
+Any alias the `claude` CLI accepts works (`haiku`, `sonnet`, `opus`, `fable`), as does a full model name. Aliases always point at the latest model of that family, so new releases are picked up without a plugin update.
 
 ### MCP servers are not loaded
 

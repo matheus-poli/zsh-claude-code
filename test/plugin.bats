@@ -90,7 +90,7 @@ SH
   [ "$status" -eq 0 ]
   [[ "$output" == *"ask=sonnet"* ]]
   [[ "$output" == *"explain=sonnet"* ]]
-  [[ "$output" == *"suggest=sonnet"* ]]
+  [[ "$output" == *"suggest=haiku"* ]]
   [[ "$output" == *"sk=^X"* ]]
   [[ "$output" == *"ek=^[e"* ]]
 }
