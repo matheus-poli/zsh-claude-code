@@ -36,13 +36,14 @@ claude-explain-widget() {
   if (( rc != 0 )) || [[ -z "$result" ]]; then
     # claude -p prints some errors, "Not logged in" among them, on stdout.
     _zsh_claude_code_report_error "${stderr_msg:-$result}" "$rc" "explain"
-    zle reset-prompt
     return $rc
   fi
 
   print -r -- "$result"
   print
-  zle reset-prompt
+  # No `zle reset-prompt` after `zle -I`: zle already redraws below the
+  # output, and a reset-prompt redraws as many lines up as the prompt has,
+  # over the last lines printed.
 }
 zle -N claude-explain-widget
 bindkey "$ZSH_CLAUDE_EXPLAIN_KEY" claude-explain-widget
