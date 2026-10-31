@@ -4,7 +4,7 @@
 [tools]
 node     = "24"
 bats     = "1.14.0"
-lefthook = "1.7.15"
+lefthook = "2.2.2"
 
 [tasks.setup]
 description = "One-time contributor setup: tools, deps, and git hooks"
