@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/matheus-poli/zsh-claude-code/compare/v0.2.0...v0.3.0) (2026-10-31)
+
+
+### Features
+
+* run `claude auth login` from the widgets, and drop claude's /login message ([cc049ba](https://github.com/matheus-poli/zsh-claude-code/commit/cc049baf7688f6876c272e37b3519dc9c8cd7b0c))
+
+
+### Bug Fixes
+
+* stop the widgets' redrawn prompt from overwriting their output ([86e1480](https://github.com/matheus-poli/zsh-claude-code/commit/86e14805077c01fb13a6e641573c14e4262ca245))
+
 ## [0.2.0](https://github.com/matheus-poli/zsh-claude-code/compare/v0.1.2...v0.2.0) (2026-10-31)
 
 
