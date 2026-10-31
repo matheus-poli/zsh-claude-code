@@ -19,7 +19,7 @@ jobs:
       # Note: because this runs as GITHUB_TOKEN, the release PR it opens will
       # not trigger ci.yml. Swap in a PAT via `token:` if you want CI to run on
       # the release PR itself.
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
