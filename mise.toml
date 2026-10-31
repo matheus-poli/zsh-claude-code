@@ -3,7 +3,7 @@
 
 [tools]
 node     = "24"
-bats     = "1.11.0"
+bats     = "1.14.0"
 lefthook = "1.7.15"
 
 [tasks.setup]
