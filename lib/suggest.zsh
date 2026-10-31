@@ -38,7 +38,8 @@ claude-suggest() {
 
   if (( rc != 0 )) || [[ -z "$result" ]]; then
     zle -I
-    _zsh_claude_code_report_error "$stderr_msg" "$rc" "suggest"
+    # claude -p prints some errors, "Not logged in" among them, on stdout.
+    _zsh_claude_code_report_error "${stderr_msg:-$result}" "$rc" "suggest"
     zle reset-prompt
     return $rc
   fi

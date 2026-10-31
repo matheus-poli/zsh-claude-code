@@ -149,7 +149,7 @@ SH
     print -r -- \"rc=\$?\"
   "
   [[ "$output" == *"Invalid API key"* ]]
-  [[ "$output" == *"claude login"* ]]
+  [[ "$output" == *"claude auth login"* ]]
   [[ "$output" == *"ask failed"* ]]
   [[ "$output" == *"rc=1"* ]]
 }
@@ -163,7 +163,7 @@ SH
   "
   [[ "$output" == *"suggest failed (exit 2)"* ]]
   [[ "$output" == *"Network timeout"* ]]
-  [[ "$output" != *"claude login"* ]]
+  [[ "$output" != *"claude auth login"* ]]
 }
 
 @test "report_error: auth-ish error adds login hint" {
@@ -173,7 +173,18 @@ SH
     source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
     _zsh_claude_code_report_error 'Unauthorized: missing credential' 1 suggest
   "
-  [[ "$output" == *"claude login"* ]]
+  [[ "$output" == *"claude auth login"* ]]
+}
+
+@test "report_error: claude's own not-logged-in message adds login hint" {
+  stub_claude
+  run zsh -c "
+    export PATH='$STUB_PATH'
+    source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
+    _zsh_claude_code_report_error 'Not logged in · Please run /login' 1 suggest
+  "
+  [[ "$output" == *"Not logged in"* ]]
+  [[ "$output" == *"claude auth login"* ]]
 }
 
 @test "ask: joins multiple words into one prompt arg" {

@@ -34,7 +34,8 @@ claude-explain-widget() {
   rm -f "$out_file" "$err_file"
 
   if (( rc != 0 )) || [[ -z "$result" ]]; then
-    _zsh_claude_code_report_error "$stderr_msg" "$rc" "explain"
+    # claude -p prints some errors, "Not logged in" among them, on stdout.
+    _zsh_claude_code_report_error "${stderr_msg:-$result}" "$rc" "explain"
     zle reset-prompt
     return $rc
   fi
