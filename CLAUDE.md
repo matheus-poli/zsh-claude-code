@@ -11,7 +11,7 @@ All four use the `claude` CLI (Claude Code) in `--print` mode under the hood. Th
 
 1. Passes tuned `--system-prompt` text so Claude behaves like a terminal assistant.
 2. Tunes flags for speed and token use (`--no-session-persistence`, `--disable-slash-commands`, `--tools ""`, `--strict-mcp-config`).
-3. Uses a cheaper/faster model (Haiku) for the inline-suggest widget, a prose-friendly model (Sonnet) for `explain`, and a more capable model (Opus) for `ask`.
+3. Picks a model per feature by measurement: Haiku for the inline-suggest widget (one short command, latency matters most), Sonnet for `explain` and `ask` (prose). See **Model choice** below.
 
 ## Target users
 
@@ -72,7 +72,7 @@ Declared with `: ${VAR:=default}` so user exports in `.zshrc` **before** plugin 
 
 - `ZSH_CLAUDE_ASK_MODEL` — default `sonnet`
 - `ZSH_CLAUDE_EXPLAIN_MODEL` — default `sonnet`
-- `ZSH_CLAUDE_SUGGEST_MODEL` — default `sonnet`
+- `ZSH_CLAUDE_SUGGEST_MODEL` — default `haiku`
 - `ZSH_CLAUDE_SUGGEST_KEY` — default `^X`
 - `ZSH_CLAUDE_EXPLAIN_KEY` — default `^[e` (Alt+E; overrides the rarely-used `capitalize-word`)
 - `ZSH_CLAUDE_ASK_SYSTEM_PROMPT` — full override of the `ask` system prompt
@@ -88,7 +88,7 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
 - **Why `--tools ""`?** These helpers are text-in/text-out. Disabling tools prevents Claude from trying to read files or run commands, which would surprise the user and slow down responses.
 - **Why `--strict-mcp-config`?** `--tools ""` only removes the built-in tools; the definitions of every MCP server in the user's Claude Code config still went out with each call. Measured on a `say OK` with Haiku: ~216k input tokens and $0.016 per call with a typical set of MCP servers, against ~1.7k (from `$HOME`) to ~8k (from a repo with a large CLAUDE.md) with the flag. The remainder is CLAUDE.md, which stays loaded on purpose. Users who want MCP context opt in with `ZSH_CLAUDE_EXTRA_FLAGS='--mcp-config <file>'`, which `--strict-mcp-config` still honors. `--safe-mode` would cut to ~800 tokens, but it also disables settings.json customizations that may carry the user's provider/auth setup, and it's documented as a troubleshooting flag.
 - **Why not `--bare`?** `--bare` disables OAuth and the keychain, so users logged in via `claude login` would break. Stick to lighter flags that preserve auth.
-- **Model choice.** All three features default to Sonnet. We originally picked Haiku for `suggest` on a "smaller-faster" hypothesis, but live-API measurements showed the opposite — Sonnet was consistently 2-3x faster wall-clock on short tools-disabled prompts. Users can still override per-feature via `ZSH_CLAUDE_*_MODEL` to pick Opus (stronger answers) or Haiku (cheaper tokens, expect higher latency today).
+- **Model choice.** Defaults are aliases (`haiku`, `sonnet`), never pinned model IDs, so each new model release is picked up automatically. Which alias each feature uses comes from `mise run bench`, re-run whenever a model family ships. History: all three features once defaulted to Sonnet, because on the earlier generation Sonnet measured 2-3x faster than Haiku on these short tools-disabled prompts. The 2026-10 run (Haiku/Sonnet/Opus 5.5, Fable 5.1; 6 samples per cell, medians) flipped that for `suggest`: Haiku 0.8s API / 4.7s wall vs Sonnet 1.2s / 5.5s, ~22x cheaper per call, same commands produced. For `explain` Sonnet stays: Haiku writes ~2.5x more and ends up slower (3.9s vs 2.8s API). For `ask` the two tie on speed and Sonnet's answers are about half as long, so it stays too. Fable was the slowest and 3-6x Sonnet's cost with no visible gain on these tasks; it's an opt-in via `ZSH_CLAUDE_*_MODEL`. About 4s of every call's wall time is `claude` CLI startup plus the user's hooks, the same for every model.
 - **Why a dedicated widget keybind instead of overriding Enter or a `#` prefix?** Overriding `accept-line` means every single Enter press goes through our hook forever; a keybind is opt-in per keystroke and leaves default behavior untouched.
 - **Suggest widget replaces `BUFFER`; explain widget does not.** `suggest` is a command-authoring flow — the user reviews the generated command and presses Enter. `explain` is a read-only flow — we print above the prompt with `zle -I` + `print` + `zle reset-prompt` so the user's typed command is preserved and can still be run or edited.
 - **Why `noglob` on the aliases?** Users type questions/commands with `?`, `*`, `[...]`, which zsh would otherwise try to expand as globs and error out with "no matches found".
@@ -149,6 +149,6 @@ Name prefixed `ZSH_CLAUDE_` to avoid collisions with the `claude` CLI's own env 
 
 ## Known issues / TODO
 
-- Widgets block the prompt while waiting (~1–3s on Haiku, longer for Sonnet/Opus). Async via `zsh/zpty` or a background subshell + `zle -I` would fix it; parked for v0.2.
+- Widgets block the prompt while waiting (~5s for suggest, ~7-8s for the explain widget, most of it `claude` CLI startup). Async via `zsh/zpty` or a background subshell + `zle -I` would fix it; parked for v0.2.
 - No telemetry, no cost tracking. If a user burns through API quota the plugin gives no warning.
 - Keybinds are resolved at source time, so changing `ZSH_CLAUDE_SUGGEST_KEY` / `ZSH_CLAUDE_EXPLAIN_KEY` after plugin load has no effect — the user must re-source their `.zshrc`.
