@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/matheus-poli/zsh-claude-code/compare/v0.1.1...v0.1.2) (2026-10-31)
+
+
+### Performance
+
+* default the suggest widget to haiku ([41b6c0f](https://github.com/matheus-poli/zsh-claude-code/commit/41b6c0fce15323de3f66aab3948bef147a8d5c40))
+* stop sending the user's MCP servers with every call ([2a6b2bf](https://github.com/matheus-poli/zsh-claude-code/commit/2a6b2bfbf3ce9d55ba28cf515d134821e77c65da))
+
 ## [0.1.1](https://github.com/matheus-poli/zsh-claude-code/compare/v0.1.0...v0.1.1) (2026-08-13)
 
 
