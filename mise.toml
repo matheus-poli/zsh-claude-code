@@ -2,7 +2,7 @@
 # First-time setup: install mise (https://mise.jdx.dev), then `mise run setup`.
 
 [tools]
-node     = "20"
+node     = "24"
 bats     = "1.11.0"
 lefthook = "1.7.15"
 
