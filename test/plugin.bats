@@ -271,14 +271,17 @@ ZSH
 
 # Runs the zsh script on stdin under a pty via script(1), typing $1 into it.
 # The script goes through a file: nested quoting would let sh expand $? etc.
-# script(1) flags differ between util-linux and BSD.
+# The keys wait until the [y/N] is up, as a user's would: typed earlier, they
+# sit in the tty's line buffer, and BSD script(1) follows its input with ^D,
+# which then reaches the read instead of the key. script(1) flags differ
+# between util-linux and BSD.
 run_in_pty() {
   local keys=$1
   cat > "$STUB_DIR/pty.zsh"
   if script --version >/dev/null 2>&1; then
-    run sh -c "printf '$keys' | script -qec 'zsh $STUB_DIR/pty.zsh' /dev/null"
+    run sh -c "(sleep 2; printf '$keys') | script -qec 'zsh $STUB_DIR/pty.zsh' /dev/null"
   else
-    run sh -c "printf '$keys' | script -q /dev/null zsh '$STUB_DIR/pty.zsh'"
+    run sh -c "(sleep 2; printf '$keys') | script -q /dev/null zsh '$STUB_DIR/pty.zsh'"
   fi
 }
 
@@ -286,7 +289,7 @@ run_in_pty() {
   command -v script >/dev/null || skip "script(1) not available"
   stub_claude_auth
   # Like Ctrl+C in the real login: exit 0 without logging in.
-  sed -i.bak 's/touch "\$state"; echo "Login successful."; exit 0/exit 0/' "$STUB_DIR/claude"
+  sed -i.bak 's/touch "\$state"; echo "Login successful."; exit 0/touch "\$state-ran"; exit 0/' "$STUB_DIR/claude"
   run_in_pty y <<ZSH
 export PATH='$STUB_PATH'
 source '$PLUGIN_DIR/zsh-claude-code.plugin.zsh'
@@ -294,6 +297,7 @@ _zsh_claude_code_ask hello
 print -r -- "rc=\$?"
 ZSH
   [[ "$output" == *"[y/N]"* ]]
+  [ -f "$STUB_DIR/logged-in-ran" ]
   [[ "$output" == *"still not logged in"* ]]
   [[ "$output" != *"answer"* ]]
   [[ "$output" == *"rc=1"* ]]
