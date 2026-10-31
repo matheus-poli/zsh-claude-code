@@ -21,8 +21,9 @@
         "code",
         "doc",
         "maintenance",
-        "design",
-        "ideas"
+        "ideas",
+        "infra",
+        "test"
       ]
     },
     {
